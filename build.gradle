@@ -1,12 +1,13 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.4.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 	id 'java'
 }
 
 group = 'com.alicjawozniak'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
@@ -19,13 +20,17 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
+	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+	compile 'org.springframework.boot:spring-boot-starter-web'
+	compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.2.2'
+	compile group: 'io.swagger', name: 'swagger-annotations', version: '1.6.0'
+	compile 'io.springfox:springfox-swagger2:2.8.0'
+	runtime 'io.springfox:springfox-swagger-ui:2.8.0'
+	compile 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+	testCompile 'junit:junit:4.12'
+	testCompile('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 }
@@ -33,3 +38,12 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+
+//querydsl
+apply plugin: 'com.ewerk.gradle.plugins.querydsl'
+querydsl {
+	querydslSourcesDir "${buildDir}/generated/querydsl"
+	jpa true
+}
+sourceSets.main.java.srcDirs += "${buildDir}/generated/querydsl"

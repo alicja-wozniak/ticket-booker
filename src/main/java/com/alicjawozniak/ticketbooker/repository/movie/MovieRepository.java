@@ -2,6 +2,8 @@ package com.alicjawozniak.ticketbooker.repository.movie;
 
 import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface MovieRepository extends JpaRepository<Long, Movie> {
+@Repository
+public interface MovieRepository extends JpaRepository<Movie, Long> {
 }
