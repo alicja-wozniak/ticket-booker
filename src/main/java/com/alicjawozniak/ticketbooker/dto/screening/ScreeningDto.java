@@ -2,7 +2,7 @@ package com.alicjawozniak.ticketbooker.dto.screening;
 
 import com.alicjawozniak.ticketbooker.dto.movie.MovieDto;
 import com.alicjawozniak.ticketbooker.dto.room.RoomDto;
-import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
+import com.alicjawozniak.ticketbooker.dto.room.SeatDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class ScreeningDto {
 
     private RoomDto room;
 
-    private List<TicketDto> soldTickets;
+    private List<SeatDto> freeSeats;
 
     private LocalDateTime startTime;
 

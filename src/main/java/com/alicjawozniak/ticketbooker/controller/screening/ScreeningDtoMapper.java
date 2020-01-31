@@ -2,14 +2,17 @@ package com.alicjawozniak.ticketbooker.controller.screening;
 
 import com.alicjawozniak.ticketbooker.controller.movie.MovieDtoMapper;
 import com.alicjawozniak.ticketbooker.controller.room.RoomDtoMapper;
-import com.alicjawozniak.ticketbooker.controller.ticket.TicketDtoMapper;
+import com.alicjawozniak.ticketbooker.controller.room.SeatDtoMapper;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
-import com.alicjawozniak.ticketbooker.dto.screening.GroupedScreeningDto;
+import com.alicjawozniak.ticketbooker.dto.movie.MovieDto;
 import com.alicjawozniak.ticketbooker.dto.screening.ScreeningDto;
+import com.alicjawozniak.ticketbooker.dto.screening.grouped.GroupedScreeningWrapperDto;
+import com.alicjawozniak.ticketbooker.dto.screening.grouped.SingleGroupedScreeningDto;
 import org.springframework.data.domain.Page;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ScreeningDtoMapper {
@@ -20,13 +23,11 @@ public class ScreeningDtoMapper {
                 .id(screening.getId())
                 .movie(MovieDtoMapper.toDto(screening.getMovie()))
                 .room(RoomDtoMapper.toDto(screening.getRoom()))
-                .soldTickets(
-                        Optional.ofNullable(screening.getSoldTickets())
-                                .map(soldTickets -> soldTickets
-                                        .stream()
-                                        .map(TicketDtoMapper::toDto)
-                                        .collect(Collectors.toList()))
-                                .orElse(Collections.emptyList())
+                .freeSeats(
+                        screening.getFreeSeats()
+                        .stream()
+                        .map(SeatDtoMapper::toDto)
+                        .collect(Collectors.toList())
                 )
                 .startTime(screening.getStartTime())
                 .endTime(screening.getEndTime())
@@ -38,19 +39,28 @@ public class ScreeningDtoMapper {
                 .map(ScreeningDtoMapper::toDto);
     }
 
-    public static GroupedScreeningDto toGroupedScreeningDto(Page<Screening> screeningPage) {
-        return
-                GroupedScreeningDto.builder()
-                        .screenings(
-                                screeningPage
+    public static GroupedScreeningWrapperDto toGroupedScreeningDto(Page<Screening> screeningPage) {
+        return GroupedScreeningWrapperDto.builder()
+                        .groupedScreenings(
+                                toSingleScreeningDtoList(screeningPage
                                         .getContent()
                                         .stream()
                                         .map(ScreeningDtoMapper::toDto)
                                         .collect(Collectors.groupingBy(
                                                 ScreeningDto::getMovie
                                         ))
+                                )
                         )
                         .build();
+    }
+
+    public static List<SingleGroupedScreeningDto> toSingleScreeningDtoList(Map<MovieDto, List<ScreeningDto>> groupedScreeningsMap) {
+        return groupedScreeningsMap
+                .entrySet()
+                .stream()
+                .map(k -> new SingleGroupedScreeningDto(k.getKey(), k.getValue()))
+                .sorted(Comparator.comparingLong(dto -> dto.getMovieDto().getId()))
+                .collect(Collectors.toList());
     }
 
 }

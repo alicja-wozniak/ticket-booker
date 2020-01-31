@@ -7,6 +7,7 @@ import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Screening {
 
     @Id
@@ -55,6 +58,9 @@ public class Screening {
                         .collect(Collectors.toList())
                 );
         return seats;
+    }
 
+    public List<Ticket> getSoldTickets() {
+        return soldTickets == null ? new ArrayList<>() : soldTickets;
     }
 }

@@ -1,4 +1,4 @@
-package com.alicjawozniak.ticketbooker;
+package com.alicjawozniak.ticketbooker.screening;
 
 import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.domain.room.Room;
@@ -6,7 +6,7 @@ import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
 import com.alicjawozniak.ticketbooker.dto.screening.CreateScreeningDto;
 import com.alicjawozniak.ticketbooker.dto.screening.ScreeningDto;
-import com.alicjawozniak.ticketbooker.pageabledto.ScreeningPageableDto;
+import com.alicjawozniak.ticketbooker.dto.screening.UpdateScreeningDto;
 import com.alicjawozniak.ticketbooker.repository.movie.MovieRepository;
 import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
 import com.alicjawozniak.ticketbooker.repository.room.SeatRepository;
@@ -18,20 +18,26 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ScreeningIntegrationTest {
+@Transactional
+@ActiveProfiles(profiles = "test")
+public class ScreeningCrudIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,7 +72,8 @@ public class ScreeningIntegrationTest {
         //when
         final MvcResult result = mockMvc.perform(post("/screenings")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
+                .content(objectMapper.writeValueAsString(createDto))
+        )
                 .andReturn();
 
         //then
@@ -79,17 +86,18 @@ public class ScreeningIntegrationTest {
         assertThat(responseDto.getMovie().getId()).isEqualTo(createDto.getMovieId());
         assertThat(responseDto.getRoom()).isNotNull();
         assertThat(responseDto.getRoom().getId()).isEqualTo(createDto.getRoomId());
+        assertThat(responseDto.getFreeSeats()).hasSize(room.getSeats().size());
         assertThat(responseDto.getStartTime()).isEqualTo(createDto.getStartTime());
         assertThat(responseDto.getEndTime()).isEqualTo(createDto.getEndTime());
 
     }
 
     @Test
-    public void canReadAllScreenings() throws Exception {
+    public void canReadScreening() throws Exception {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
-        Screening screening1 = screeningRepository.save(
+        Screening screening = screeningRepository.save(
                 Screening.builder()
                         .movie(movie)
                         .room(room)
@@ -99,13 +107,90 @@ public class ScreeningIntegrationTest {
         );
 
         //when
-        final MvcResult result = mockMvc.perform(get("/screenings"))
+        final MvcResult result = mockMvc.perform(get("/screenings/{id}", screening.getId().toString()))
                 .andReturn();
 
         //then
-        ScreeningPageableDto responseDto =
-                objectMapper.readValue(result.getResponse().getContentAsString(), ScreeningPageableDto.class);
-        assertThat(responseDto.getContent()).isNotEmpty();
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        ScreeningDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), ScreeningDto.class);
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getId()).isNotNull();
+        assertThat(responseDto.getMovie()).isNotNull();
+        assertThat(responseDto.getMovie().getId()).isEqualTo(movie.getId());
+        assertThat(responseDto.getRoom()).isNotNull();
+        assertThat(responseDto.getRoom().getId()).isEqualTo(room.getId());
+        assertThat(responseDto.getFreeSeats()).hasSize(3);
+        assertThat(responseDto.getStartTime()).isEqualTo(screening.getStartTime());
+        assertThat(responseDto.getEndTime()).isEqualTo(screening.getEndTime());
+    }
+
+    @Test
+    public void canUpdateScreening() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        Screening screening = screeningRepository.save(
+                Screening.builder()
+                        .movie(movie)
+                        .room(room)
+                        .startTime(LocalDateTime.now().plusDays(1))
+                        .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
+                        .build()
+        );
+
+        Movie movie2 = createMovie();
+        Room room2 = createRoom();
+        UpdateScreeningDto updateDto = UpdateScreeningDto.builder()
+                .movieId(movie2.getId())
+                .roomId(room2.getId())
+                .startTime(LocalDateTime.now().plusDays(1))
+                .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
+                .build();
+
+        //when
+        final MvcResult result = mockMvc.perform(put("/screenings/{id}", screening.getId().toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto))
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        ScreeningDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), ScreeningDto.class);
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getId()).isNotNull();
+        assertThat(responseDto.getMovie()).isNotNull();
+        assertThat(responseDto.getMovie().getId()).isEqualTo(updateDto.getMovieId());
+        assertThat(responseDto.getRoom()).isNotNull();
+        assertThat(responseDto.getRoom().getId()).isEqualTo(updateDto.getRoomId());
+        assertThat(responseDto.getFreeSeats()).hasSize(room2.getSeats().size());
+        assertThat(responseDto.getStartTime()).isEqualTo(updateDto.getStartTime());
+        assertThat(responseDto.getEndTime()).isEqualTo(updateDto.getEndTime());
+    }
+
+    @Test
+    public void canDeleteScreening() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        Screening screening = screeningRepository.save(
+                Screening.builder()
+                        .movie(movie)
+                        .room(room)
+                        .startTime(LocalDateTime.now().plusDays(1))
+                        .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
+                        .build()
+        );
+
+        //when
+        final MvcResult result = mockMvc.perform(delete("/screenings/{id}", screening.getId().toString()))
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(screeningRepository.findAll()).isEmpty();
     }
 
     private Movie createMovie(){
