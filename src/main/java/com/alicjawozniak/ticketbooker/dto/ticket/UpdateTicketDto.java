@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +21,12 @@ public class UpdateTicketDto {
 
     private Map<TicketType,Integer> typeQuantities;
 
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{2,}")
     private String userName;
 
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{2,}(-[A-Z][a-z]{2,})?")
     private String userSurname;
 
     private Long screeningId;
