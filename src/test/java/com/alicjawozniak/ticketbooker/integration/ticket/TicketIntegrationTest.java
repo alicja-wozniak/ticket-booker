@@ -6,6 +6,7 @@ import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.domain.ticket.TicketType;
+import com.alicjawozniak.ticketbooker.dto.ErrorDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
@@ -107,6 +108,46 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getPaymentDeadline().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(responseDto.getPaymentDeadline().getHour()).isEqualTo(LocalDateTime.now().plusHours(2).getHour());
         assertThat(responseDto.getPrice()).isEqualTo(25);
+
+    }
+
+    @Test
+    public void cannotCreateTicketAfterReservationTimeLimit() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        Screening screening = screeningRepository.save(
+                Screening.builder()
+                        .movie(movie)
+                        .room(room)
+                        .startTime(LocalDateTime.now().plusMinutes(5))
+                        .endTime(LocalDateTime.now().plusHours(2))
+                        .build()
+        );
+
+        CreateTicketDto createDto = CreateTicketDto.builder()
+                .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
+                .userName("Adam")
+                .userSurname("Smith")
+                .screeningId(screening.getId())
+                .seatIds(Collections.singletonList(room.getSeats().get(0).getId()))
+                .build();
+
+        //when
+        final MvcResult result = mockMvc.perform(post("/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto))
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getMessage()).isEqualTo("Too late reservation");
+        assertThat(responseDto.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseDto.getTimestamp()).isNotNull();
 
     }
 

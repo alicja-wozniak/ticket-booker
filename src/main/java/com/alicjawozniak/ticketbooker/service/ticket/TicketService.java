@@ -4,6 +4,7 @@ import com.alicjawozniak.ticketbooker.domain.ticket.QTicket;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
+import com.alicjawozniak.ticketbooker.exception.ticket.TooLateReservationException;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
 import com.alicjawozniak.ticketbooker.service.room.SeatService;
 import com.alicjawozniak.ticketbooker.service.screening.ScreeningService;
@@ -31,9 +32,9 @@ public class TicketService {
     private final TicketRepository ticketRepository;
 
     public Ticket create(CreateTicketDto dto) {
-        return ticketRepository.save(
-                toDomain(dto)
-        );
+        Ticket ticket = toDomain(dto);
+        validate(ticket);
+        return ticketRepository.save(ticket);
     }
 
     public Ticket read(Long id) {
@@ -93,5 +94,13 @@ public class TicketService {
                                 .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+    private void validate(Ticket ticket) {
+        if (LocalDateTime.now().isAfter(
+                ticket.getScreening().getStartTime().minusMinutes(15L))
+        ) {
+            throw new TooLateReservationException();
+        }
     }
 }
