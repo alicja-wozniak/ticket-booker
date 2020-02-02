@@ -28,4 +28,6 @@ public class TicketDto {
     private ScreeningDto screening;
 
     private List<SeatDto> seats;
+
+    private Double price;
 }

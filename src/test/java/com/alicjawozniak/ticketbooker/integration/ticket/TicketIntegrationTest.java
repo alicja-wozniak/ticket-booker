@@ -103,6 +103,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(createDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(createDto.getScreeningId());
+        assertThat(responseDto.getPrice()).isEqualTo(25);
 
     }
 
@@ -140,6 +141,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(ticket.getSeats().get(0).getId());
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(screening.getId());
+        assertThat(responseDto.getPrice()).isEqualTo(25);
     }
 
     @Test
@@ -188,7 +190,9 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent().get(0).getSeats()).isNotEmpty();
         assertThat(responseDto.getContent().get(0).getSeats().get(0).getId()).isEqualTo(ticket1.getSeats().get(0).getId());
         assertThat(responseDto.getContent().get(0).getScreening()).isNotNull();
-        assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());    }
+        assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());
+        assertThat(responseDto.getContent().get(0).getPrice()).isEqualTo(25);
+    }
 
     @Test
     public void canUpdateTicket() throws Exception {
@@ -238,6 +242,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(updateDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(updateDto.getScreeningId());
+        assertThat(responseDto.getPrice()).isEqualTo(18);
     }
 
     @Test

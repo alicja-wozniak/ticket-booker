@@ -23,6 +23,7 @@ public class TicketDtoMapper {
                         .map(SeatDtoMapper::toDto)
                         .collect(Collectors.toList())
                 )
+                .price(ticket.getPrice())
                 .build();
     }
 }

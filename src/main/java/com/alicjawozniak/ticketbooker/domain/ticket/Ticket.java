@@ -42,4 +42,13 @@ public class Ticket {
 
     @ManyToMany
     private List<Seat> seats;
+
+    public Double getPrice() {
+        return typeQuantities.entrySet()
+                .stream()
+                .mapToDouble(
+                        entry -> entry.getKey().getPrice() * entry.getValue()
+                )
+                .sum();
+    }
 }
