@@ -58,9 +58,21 @@ public class ScreeningDtoMapper {
         return groupedScreeningsMap
                 .entrySet()
                 .stream()
-                .map(k -> new SingleGroupedScreeningDto(k.getKey(), k.getValue()))
-                .sorted(Comparator.comparingLong(dto -> dto.getMovieDto().getId()))
+                .map(k -> new SingleGroupedScreeningDto(k.getKey(), getSortedScreenings(k.getValue())))
+                .sorted(Comparator.comparing(SingleGroupedScreeningDto::getMovieDto, getMoviesComparator()))
                 .collect(Collectors.toList());
     }
 
+    private static List<ScreeningDto> getSortedScreenings(List<ScreeningDto> screeningDtos) {
+        screeningDtos.sort(getScreeningsComparator());
+        return screeningDtos;
+    }
+
+    private static Comparator<ScreeningDto> getScreeningsComparator() {
+        return Comparator.comparing(ScreeningDto::getStartTime);
+    }
+
+    private static Comparator<MovieDto> getMoviesComparator() {
+        return Comparator.comparing(MovieDto::getTitle);
+    }
 }
