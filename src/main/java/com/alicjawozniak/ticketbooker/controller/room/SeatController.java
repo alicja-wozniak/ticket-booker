@@ -1,9 +1,9 @@
-package com.alicjawozniak.ticketbooker.controller.movie;
+package com.alicjawozniak.ticketbooker.controller.room;
 
-import com.alicjawozniak.ticketbooker.dto.movie.CreateMovieDto;
-import com.alicjawozniak.ticketbooker.dto.movie.MovieDto;
-import com.alicjawozniak.ticketbooker.dto.movie.UpdateMovieDto;
-import com.alicjawozniak.ticketbooker.service.movie.MovieService;
+import com.alicjawozniak.ticketbooker.dto.room.CreateSeatDto;
+import com.alicjawozniak.ticketbooker.dto.room.SeatDto;
+import com.alicjawozniak.ticketbooker.dto.room.UpdateSeatDto;
+import com.alicjawozniak.ticketbooker.service.room.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,44 +23,43 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movies")
-public class MovieController {
+@RequestMapping("/seats")
+public class SeatController {
 
-    private final MovieService movieService;
+    private final SeatService seatService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovieDto create(@RequestBody @Valid CreateMovieDto dto){
-        return MovieDtoMapper.toDto(
-                movieService.create(dto)
+    public SeatDto create(@RequestBody @Valid CreateSeatDto dto){
+        return SeatDtoMapper.toDto(
+                seatService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
-    public MovieDto read(@PathVariable("id") Long id){
-        return MovieDtoMapper.toDto(
-                movieService.read(id)
+    public SeatDto read(@PathVariable("id") Long id){
+        return SeatDtoMapper.toDto(
+                seatService.read(id)
         );
     }
 
     @GetMapping
-    public Page<MovieDto> readAll(
-            @RequestParam(value = "movieId", required = false) String title,
+    public Page<SeatDto> readAll(
             @PageableDefault(sort = "id") Pageable pageable
     ) {
-        return movieService.readAll(title, pageable)
-                .map(MovieDtoMapper::toDto);
+        return seatService.readAll(pageable)
+                .map(SeatDtoMapper::toDto);
     }
 
     @PutMapping("/{id}")
-    public MovieDto update(@PathVariable("id") Long id, @RequestBody UpdateMovieDto dto){
-        return MovieDtoMapper.toDto(
-                movieService.update(id, dto)
+    public SeatDto update(@PathVariable("id") Long id, @RequestBody UpdateSeatDto dto){
+        return SeatDtoMapper.toDto(
+                seatService.update(id, dto)
         );
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id){
-        movieService.delete(id);
+        seatService.delete(id);
     }
 }
