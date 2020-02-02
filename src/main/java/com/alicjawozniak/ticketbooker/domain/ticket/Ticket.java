@@ -14,12 +14,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Entity
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ticket {
@@ -42,6 +43,8 @@ public class Ticket {
 
     @ManyToMany
     private List<Seat> seats;
+
+    private LocalDateTime paymentDeadline;
 
     public Double getPrice() {
         return typeQuantities.entrySet()

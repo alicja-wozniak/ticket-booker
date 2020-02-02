@@ -14,12 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TicketService {
+
+    private static final int HOURS_TO_COMPLETE_PAYMENT = 2;
 
     private final ScreeningService screeningService;
 
@@ -51,9 +54,10 @@ public class TicketService {
     }
 
     public Ticket update(Long id, UpdateTicketDto dto) {
-        return ticketRepository.save(
-                toDomain(id, dto)
-        );
+        return ticketRepository.findById(id)
+                .map(ticket -> merge(ticket, dto))
+                .map(ticketRepository::save)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public void delete(Long id) {
@@ -72,12 +76,12 @@ public class TicketService {
                         .map(seatService::read)
                         .collect(Collectors.toList())
                 )
+                .paymentDeadline(LocalDateTime.now().plusHours(HOURS_TO_COMPLETE_PAYMENT))
                 .build();
     }
 
-    private Ticket toDomain(Long id, UpdateTicketDto dto) {
-        return Ticket.builder()
-                .id(id)
+    private Ticket merge(Ticket ticket, UpdateTicketDto dto) {
+        return ticket.toBuilder()
                 .typeQuantities(dto.getTypeQuantities())
                 .userName(dto.getUserName())
                 .userSurname(dto.getUserSurname())

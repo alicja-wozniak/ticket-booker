@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,8 @@ public class TicketDto {
     private ScreeningDto screening;
 
     private List<SeatDto> seats;
+
+    private LocalDateTime paymentDeadline;
 
     private Double price;
 }

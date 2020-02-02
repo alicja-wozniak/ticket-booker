@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,6 +104,8 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(createDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(createDto.getScreeningId());
+        assertThat(responseDto.getPaymentDeadline().toLocalDate()).isEqualTo(LocalDate.now());
+        assertThat(responseDto.getPaymentDeadline().getHour()).isEqualTo(LocalDateTime.now().plusHours(2).getHour());
         assertThat(responseDto.getPrice()).isEqualTo(25);
 
     }
@@ -120,6 +123,7 @@ public class TicketIntegrationTest {
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
                         .build()
         );
 
@@ -141,6 +145,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(ticket.getSeats().get(0).getId());
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(screening.getId());
+        assertThat(responseDto.getPaymentDeadline()).isEqualTo(ticket.getPaymentDeadline());
         assertThat(responseDto.getPrice()).isEqualTo(25);
     }
 
@@ -157,6 +162,7 @@ public class TicketIntegrationTest {
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
                         .build()
         );
         Ticket ticket2 = ticketRepository.save(
@@ -166,6 +172,7 @@ public class TicketIntegrationTest {
                         .userSurname("Nowak")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
                         .build()
         );
 
@@ -191,6 +198,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent().get(0).getSeats().get(0).getId()).isEqualTo(ticket1.getSeats().get(0).getId());
         assertThat(responseDto.getContent().get(0).getScreening()).isNotNull();
         assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());
+        assertThat(responseDto.getContent().get(0).getPaymentDeadline()).isEqualTo(ticket1.getPaymentDeadline());
         assertThat(responseDto.getContent().get(0).getPrice()).isEqualTo(25);
     }
 
@@ -207,6 +215,7 @@ public class TicketIntegrationTest {
                         .userSurname("Smith")
                         .seats(new ArrayList<>(List.of(room.getSeats().get(0))))
                         .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
                         .build()
         );
 
@@ -242,6 +251,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(updateDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(updateDto.getScreeningId());
+        assertThat(responseDto.getPaymentDeadline()).isEqualTo(ticket.getPaymentDeadline());
         assertThat(responseDto.getPrice()).isEqualTo(18);
     }
 
@@ -258,6 +268,7 @@ public class TicketIntegrationTest {
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
                         .build()
         );
 
