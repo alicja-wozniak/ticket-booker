@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateMovieDto {
 
-    private Long id;
-
     private String title;
 
 }

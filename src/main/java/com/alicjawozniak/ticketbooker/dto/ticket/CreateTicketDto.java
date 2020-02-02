@@ -1,6 +1,7 @@
 package com.alicjawozniak.ticketbooker.dto.ticket;
 
 import com.alicjawozniak.ticketbooker.domain.ticket.TicketType;
+import com.alicjawozniak.ticketbooker.dto.validation.ticket.ValidSeatsQuantity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,8 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class CreateTicketDto {
+@ValidSeatsQuantity
+public class CreateTicketDto implements SeatsQuantityDto {
 
     private Map<TicketType,Integer> typeQuantities;
 

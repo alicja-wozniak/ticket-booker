@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateSeatDto {
 
-    private Long id;
-
     private String number;
 
 }

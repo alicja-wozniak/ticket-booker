@@ -1,5 +1,6 @@
 package com.alicjawozniak.ticketbooker.unit.ticket;
 
+import com.alicjawozniak.ticketbooker.domain.ticket.TicketType;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,8 @@ import org.junit.runners.Parameterized;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -28,6 +31,8 @@ public class TicketNameValidationTest {
         CreateTicketDto createTicketDto = CreateTicketDto.builder()
                 .userName(input)
                 .userSurname("Nowak")
+                .seatIds(Collections.singletonList(1L))
+                .typeQuantities(Map.of(TicketType.ADULT, 1))
                 .build();
 
         //when
@@ -44,6 +49,8 @@ public class TicketNameValidationTest {
         UpdateTicketDto updateTicketDto = UpdateTicketDto.builder()
                 .userName(input)
                 .userSurname("Nowak")
+                .seatIds(Collections.singletonList(1L))
+                .typeQuantities(Map.of(TicketType.ADULT, 1))
                 .build();
 
         //when
@@ -72,6 +79,8 @@ public class TicketNameValidationTest {
         CreateTicketDto createTicketDto = CreateTicketDto.builder()
                 .userName("Adam")
                 .userSurname(input)
+                .seatIds(Collections.singletonList(1L))
+                .typeQuantities(Map.of(TicketType.ADULT, 1))
                 .build();
 
         //when
@@ -88,6 +97,8 @@ public class TicketNameValidationTest {
         UpdateTicketDto updateTicketDto = UpdateTicketDto.builder()
                 .userName("Adam")
                 .userSurname(input)
+                .seatIds(Collections.singletonList(1L))
+                .typeQuantities(Map.of(TicketType.ADULT, 1))
                 .build();
 
         //when
