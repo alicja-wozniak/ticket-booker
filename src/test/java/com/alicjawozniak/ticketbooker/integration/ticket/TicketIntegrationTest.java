@@ -6,7 +6,6 @@ import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.domain.ticket.TicketType;
-import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
@@ -16,7 +15,6 @@ import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
 import com.alicjawozniak.ticketbooker.repository.room.SeatRepository;
 import com.alicjawozniak.ticketbooker.repository.screening.ScreeningRepository;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
-import com.alicjawozniak.ticketbooker.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +49,6 @@ public class TicketIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private RoomRepository roomRepository;
 
     @Autowired
@@ -75,12 +70,12 @@ public class TicketIntegrationTest {
     public void canCreateTicket() throws Exception {
         //given
         Movie movie = createMovie();
-        User user = createUser();
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
         CreateTicketDto createDto = CreateTicketDto.builder()
                 .type(TicketType.ADULT)
-                .userId(user.getId())
+                .userName("Adam")
+                .userSurname("Smith")
                 .screeningId(screening.getId())
                 .seatIds(Collections.singletonList(room.getSeats().get(0).getId()))
                 .build();
@@ -99,8 +94,8 @@ public class TicketIntegrationTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getType()).isEqualTo(createDto.getType());
-        assertThat(responseDto.getUser()).isNotNull();
-        assertThat(responseDto.getUser().getId()).isEqualTo(createDto.getUserId());
+        assertThat(responseDto.getUserName()).isEqualTo(createDto.getUserName());
+        assertThat(responseDto.getUserSurname()).isEqualTo(createDto.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
         assertThat(responseDto.getSeats()).isNotEmpty();
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(createDto.getSeatIds().get(0));
@@ -113,13 +108,13 @@ public class TicketIntegrationTest {
     public void canReadTicket() throws Exception {
         //given
         Movie movie = createMovie();
-        User user = createUser();
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .type(TicketType.ADULT)
-                        .user(user)
+                        .userName("Adam")
+                        .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
@@ -136,8 +131,8 @@ public class TicketIntegrationTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getType()).isEqualTo(ticket.getType());
-        assertThat(responseDto.getUser()).isNotNull();
-        assertThat(responseDto.getUser().getId()).isEqualTo(user.getId());
+        assertThat(responseDto.getUserName()).isEqualTo(ticket.getUserName());
+        assertThat(responseDto.getUserSurname()).isEqualTo(ticket.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
         assertThat(responseDto.getSeats()).isNotEmpty();
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(ticket.getSeats().get(0).getId());
@@ -146,25 +141,25 @@ public class TicketIntegrationTest {
     }
 
     @Test
-    public void canReadAllMovies() throws Exception {
+    public void canReadAllTickets() throws Exception {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
-        User user1 = createUser();
         Ticket ticket1 = ticketRepository.save(
                 Ticket.builder()
                         .type(TicketType.ADULT)
-                        .user(user1)
+                        .userName("Adam")
+                        .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
         );
-        User user2 = createUser();
         Ticket ticket2 = ticketRepository.save(
                 Ticket.builder()
                         .type(TicketType.ADULT)
-                        .user(user2)
+                        .userName("John")
+                        .userSurname("Nowak")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
@@ -173,7 +168,7 @@ public class TicketIntegrationTest {
 
         //when
         final MvcResult result = mockMvc.perform(get("/tickets")
-                .param("userId", ticket1.getUser().getId().toString())
+                .param("userSurname", ticket1.getUserSurname())
         )
                 .andReturn();
 
@@ -185,8 +180,8 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent()).hasSize(1);
         assertThat(responseDto.getContent().get(0).getId()).isEqualTo(ticket1.getId());
         assertThat(responseDto.getContent().get(0).getType()).isEqualTo(ticket1.getType());
-        assertThat(responseDto.getContent().get(0).getUser()).isNotNull();
-        assertThat(responseDto.getContent().get(0).getUser().getId()).isEqualTo(user1.getId());
+        assertThat(responseDto.getContent().get(0).getUserName()).isEqualTo(ticket1.getUserName());
+        assertThat(responseDto.getContent().get(0).getUserSurname()).isEqualTo(ticket1.getUserSurname());
         assertThat(responseDto.getContent().get(0).getSeats()).isNotNull();
         assertThat(responseDto.getContent().get(0).getSeats()).isNotEmpty();
         assertThat(responseDto.getContent().get(0).getSeats().get(0).getId()).isEqualTo(ticket1.getSeats().get(0).getId());
@@ -197,25 +192,25 @@ public class TicketIntegrationTest {
     public void canUpdateTicket() throws Exception {
         //given
         Movie movie = createMovie();
-        User user = createUser();
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .type(TicketType.ADULT)
-                        .user(user)
+                        .userName("Adam")
+                        .userSurname("Smith")
                         .seats(new ArrayList<>(List.of(room.getSeats().get(0))))
                         .screening(screening)
                         .build()
         );
 
         Movie movie2 = createMovie();
-        User user2 = createUser();
         Room room2 = createRoom();
         Screening screening2 = createScreening(movie2, room2);
         UpdateTicketDto updateDto = UpdateTicketDto.builder()
                 .type(TicketType.STUDENT)
-                .userId(user2.getId())
+                .userName("John")
+                .userSurname("Nowak")
                 .screeningId(screening2.getId())
                 .seatIds(new ArrayList<>(List.of(room2.getSeats().get(0).getId())))
                 .build();
@@ -234,8 +229,8 @@ public class TicketIntegrationTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getType()).isEqualTo(updateDto.getType());
-        assertThat(responseDto.getUser()).isNotNull();
-        assertThat(responseDto.getUser().getId()).isEqualTo(updateDto.getUserId());
+        assertThat(responseDto.getUserName()).isEqualTo(updateDto.getUserName());
+        assertThat(responseDto.getUserSurname()).isEqualTo(updateDto.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
         assertThat(responseDto.getSeats()).isNotEmpty();
         assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(updateDto.getSeatIds().get(0));
@@ -247,13 +242,13 @@ public class TicketIntegrationTest {
     public void canDeleteTicket() throws Exception {
         //given
         Movie movie = createMovie();
-        User user = createUser();
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .type(TicketType.ADULT)
-                        .user(user)
+                        .userName("Adam")
+                        .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
@@ -266,15 +261,6 @@ public class TicketIntegrationTest {
         //then
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(ticketRepository.findAll()).isEmpty();
-    }
-
-    private User createUser(){
-        return userRepository.save(
-                User.builder()
-                        .name("Name")
-                        .surname("Surname")
-                        .build()
-        );
     }
 
     private Room createRoom(){

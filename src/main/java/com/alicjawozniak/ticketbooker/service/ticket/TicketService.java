@@ -1,14 +1,12 @@
 package com.alicjawozniak.ticketbooker.service.ticket;
 
-import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.domain.ticket.QTicket;
+import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
-import com.alicjawozniak.ticketbooker.service.movie.MovieService;
 import com.alicjawozniak.ticketbooker.service.room.SeatService;
 import com.alicjawozniak.ticketbooker.service.screening.ScreeningService;
-import com.alicjawozniak.ticketbooker.service.user.UserService;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,8 +25,6 @@ public class TicketService {
 
     private final SeatService seatService;
 
-    private final UserService userService;
-
     private final TicketRepository ticketRepository;
 
     public Ticket create(CreateTicketDto dto) {
@@ -43,13 +39,13 @@ public class TicketService {
     }
 
     public Page<Ticket> readAll(
-            Long userId,
+            String userSurname,
             Pageable pageable) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
 
         QTicket qTicket = QTicket.ticket;
-        Optional.ofNullable(userId)
-                .ifPresent(userId1 -> booleanBuilder.and(qTicket.user.id.eq(userId1)));
+        Optional.ofNullable(userSurname)
+                .ifPresent(userSurname1 -> booleanBuilder.and(qTicket.userSurname.like(userSurname)));
 
         return ticketRepository.findAll(booleanBuilder, pageable);
     }
@@ -67,7 +63,8 @@ public class TicketService {
     private Ticket toDomain(CreateTicketDto dto) {
         return Ticket.builder()
                 .type(dto.getType())
-                .user(userService.read(dto.getUserId()))
+                .userName(dto.getUserName())
+                .userSurname(dto.getUserSurname())
                 .screening(screeningService.read(dto.getScreeningId()))
                 .seats(
                         dto.getSeatIds()
@@ -82,7 +79,8 @@ public class TicketService {
         return Ticket.builder()
                 .id(id)
                 .type(dto.getType())
-                .user(userService.read(dto.getUserId()))
+                .userName(dto.getUserName())
+                .userSurname(dto.getUserSurname())
                 .screening(screeningService.read(dto.getScreeningId()))
                 .seats(
                         dto.getSeatIds()

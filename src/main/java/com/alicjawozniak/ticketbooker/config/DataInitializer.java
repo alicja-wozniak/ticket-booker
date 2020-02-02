@@ -6,19 +6,18 @@ import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.domain.ticket.TicketType;
-import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.repository.movie.MovieRepository;
 import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
 import com.alicjawozniak.ticketbooker.repository.room.SeatRepository;
 import com.alicjawozniak.ticketbooker.repository.screening.ScreeningRepository;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
-import com.alicjawozniak.ticketbooker.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -39,8 +38,6 @@ public class DataInitializer {
 
     private final TicketRepository ticketRepository;
 
-    private final UserRepository userRepository;
-
     private final ScreeningRepository screeningRepository;
 
     private Random random = new Random();
@@ -53,9 +50,7 @@ public class DataInitializer {
         List<Room> rooms = Stream.of("Room 1", "Room 2", "Room 3", "Room 4", "Room 5")
                 .map(this::createRoom)
                 .collect(Collectors.toList());
-        List<User> users = Stream.of("Kowalski", "Nowak", "Smith")
-                .map(this::createUser)
-                .collect(Collectors.toList());
+        List<String> userSurnames = Arrays.asList("Kowalski", "Nowak", "Smith");
 
         List<Screening> screenings = IntStream.rangeClosed(1, 20)
                 .mapToObj(i -> createScreening(
@@ -69,7 +64,7 @@ public class DataInitializer {
                     Screening screening = getRandomElement(screenings);
                     createTicket(
                             screening,
-                            getRandomElement(users),
+                            getRandomElement(userSurnames),
                             getRandomElement(screening.getFreeSeats())
                     );
                 });
@@ -117,20 +112,12 @@ public class DataInitializer {
         );
     }
 
-    private User createUser(String surname){
-        return userRepository.save(
-                User.builder()
-                        .name("A.")
-                        .surname(surname)
-                        .build()
-        );
-    }
-
-    private void createTicket(Screening screening, User user, Seat seat){
+    private void createTicket(Screening screening, String userSurname, Seat seat){
         ticketRepository.save(
                 Ticket.builder()
                         .screening(screening)
-                        .user(user)
+                        .userName("Adam")
+                        .userSurname(userSurname)
                         .type(TicketType.ADULT)
                         .seats(Collections.singletonList(seat))
                         .build()

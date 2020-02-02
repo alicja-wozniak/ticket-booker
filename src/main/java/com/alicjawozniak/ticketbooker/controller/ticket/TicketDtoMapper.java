@@ -2,7 +2,6 @@ package com.alicjawozniak.ticketbooker.controller.ticket;
 
 import com.alicjawozniak.ticketbooker.controller.room.SeatDtoMapper;
 import com.alicjawozniak.ticketbooker.controller.screening.ScreeningDtoMapper;
-import com.alicjawozniak.ticketbooker.controller.user.UserDtoMapper;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 
@@ -15,7 +14,8 @@ public class TicketDtoMapper {
                 .builder()
                 .id(ticket.getId())
                 .type(ticket.getType())
-                .user(UserDtoMapper.toDto(ticket.getUser()))
+                .userName(ticket.getUserName())
+                .userSurname(ticket.getUserSurname())
                 .screening(ScreeningDtoMapper.toDto(ticket.getScreening()))
                 .seats(
                         ticket.getSeats()

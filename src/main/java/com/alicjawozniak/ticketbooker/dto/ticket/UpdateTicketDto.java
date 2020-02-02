@@ -18,7 +18,9 @@ public class UpdateTicketDto {
 
     private TicketType type;
 
-    private Long userId;
+    private String userName;
+
+    private String userSurname;
 
     private Long screeningId;
 

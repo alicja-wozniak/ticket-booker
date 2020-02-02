@@ -2,7 +2,6 @@ package com.alicjawozniak.ticketbooker.domain.ticket;
 
 import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.screening.Screening;
-import com.alicjawozniak.ticketbooker.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +32,11 @@ public class Ticket {
     @Column(nullable = false)
     private TicketType type;
 
-    @ManyToOne
-    private User user;
+    @Column(nullable = false)
+    private String userName;
+
+    @Column(nullable = false)
+    private String userSurname;
 
     @ManyToOne(optional = false)
     private Screening screening;

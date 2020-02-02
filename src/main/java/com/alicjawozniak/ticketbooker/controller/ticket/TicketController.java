@@ -46,10 +46,10 @@ public class TicketController {
 
     @GetMapping
     public Page<TicketDto> readAll(
-            @RequestParam(value = "userId", required = false) Long userId,
+            @RequestParam(value = "userSurname", required = false) String userSurname,
             @PageableDefault(sort = "id") Pageable pageable
     ) {
-        return ticketService.readAll(userId, pageable)
+        return ticketService.readAll(userSurname, pageable)
                 .map(TicketDtoMapper::toDto);
     }
 
