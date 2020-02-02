@@ -14,7 +14,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 @Data
@@ -37,6 +39,6 @@ public class Ticket {
     @ManyToOne(optional = false)
     private Screening screening;
 
-    @ManyToOne(optional = false)
-    private Seat seat;
+    @ManyToMany
+    private List<Seat> seats;
 }

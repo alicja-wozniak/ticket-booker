@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,8 @@ public class Screening {
         seats.removeAll(
                         getSoldTickets()
                         .stream()
-                        .map(Ticket::getSeat)
+                        .map(Ticket::getSeats)
+                        .flatMap(Collection::stream)
                         .collect(Collectors.toList())
                 );
         return seats;

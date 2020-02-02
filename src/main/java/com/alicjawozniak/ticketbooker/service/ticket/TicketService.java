@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +69,12 @@ public class TicketService {
                 .type(dto.getType())
                 .user(userService.read(dto.getUserId()))
                 .screening(screeningService.read(dto.getScreeningId()))
-                .seat(seatService.read(dto.getSeatId()))
+                .seats(
+                        dto.getSeatIds()
+                        .stream()
+                        .map(seatService::read)
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -78,7 +84,12 @@ public class TicketService {
                 .type(dto.getType())
                 .user(userService.read(dto.getUserId()))
                 .screening(screeningService.read(dto.getScreeningId()))
-                .seat(seatService.read(dto.getSeatId()))
+                .seats(
+                        dto.getSeatIds()
+                                .stream()
+                                .map(seatService::read)
+                                .collect(Collectors.toList())
+                )
                 .build();
     }
 }

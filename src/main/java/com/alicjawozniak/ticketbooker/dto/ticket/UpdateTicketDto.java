@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Builder
@@ -20,5 +22,5 @@ public class UpdateTicketDto {
 
     private Long screeningId;
 
-    private Long seatId;
+    private List<Long> seatIds;
 }

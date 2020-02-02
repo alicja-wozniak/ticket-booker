@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,5 +25,5 @@ public class TicketDto {
 
     private ScreeningDto screening;
 
-    private SeatDto seat;
+    private List<SeatDto> seats;
 }

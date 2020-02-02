@@ -6,6 +6,8 @@ import com.alicjawozniak.ticketbooker.controller.user.UserDtoMapper;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 
+import java.util.stream.Collectors;
+
 public class TicketDtoMapper {
 
     public static TicketDto toDto(Ticket ticket) {
@@ -15,7 +17,12 @@ public class TicketDtoMapper {
                 .type(ticket.getType())
                 .user(UserDtoMapper.toDto(ticket.getUser()))
                 .screening(ScreeningDtoMapper.toDto(ticket.getScreening()))
-                .seat(SeatDtoMapper.toDto(ticket.getSeat()))
+                .seats(
+                        ticket.getSeats()
+                        .stream()
+                        .map(SeatDtoMapper::toDto)
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 }

@@ -30,7 +30,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +82,7 @@ public class TicketIntegrationTest {
                 .type(TicketType.ADULT)
                 .userId(user.getId())
                 .screeningId(screening.getId())
-                .seatId(room.getSeats().get(0).getId())
+                .seatIds(Collections.singletonList(room.getSeats().get(0).getId()))
                 .build();
 
         //when
@@ -99,8 +101,9 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getType()).isEqualTo(createDto.getType());
         assertThat(responseDto.getUser()).isNotNull();
         assertThat(responseDto.getUser().getId()).isEqualTo(createDto.getUserId());
-        assertThat(responseDto.getSeat()).isNotNull();
-        assertThat(responseDto.getSeat().getId()).isEqualTo(createDto.getSeatId());
+        assertThat(responseDto.getSeats()).isNotNull();
+        assertThat(responseDto.getSeats()).isNotEmpty();
+        assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(createDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(createDto.getScreeningId());
 
@@ -117,7 +120,7 @@ public class TicketIntegrationTest {
                 Ticket.builder()
                         .type(TicketType.ADULT)
                         .user(user)
-                        .seat(room.getSeats().get(0))
+                        .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
         );
@@ -135,8 +138,9 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getType()).isEqualTo(ticket.getType());
         assertThat(responseDto.getUser()).isNotNull();
         assertThat(responseDto.getUser().getId()).isEqualTo(user.getId());
-        assertThat(responseDto.getSeat()).isNotNull();
-        assertThat(responseDto.getSeat().getId()).isEqualTo(ticket.getSeat().getId());
+        assertThat(responseDto.getSeats()).isNotNull();
+        assertThat(responseDto.getSeats()).isNotEmpty();
+        assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(ticket.getSeats().get(0).getId());
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(screening.getId());
     }
@@ -152,7 +156,7 @@ public class TicketIntegrationTest {
                 Ticket.builder()
                         .type(TicketType.ADULT)
                         .user(user1)
-                        .seat(room.getSeats().get(0))
+                        .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
         );
@@ -161,7 +165,7 @@ public class TicketIntegrationTest {
                 Ticket.builder()
                         .type(TicketType.ADULT)
                         .user(user2)
-                        .seat(room.getSeats().get(0))
+                        .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
         );
@@ -183,8 +187,9 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent().get(0).getType()).isEqualTo(ticket1.getType());
         assertThat(responseDto.getContent().get(0).getUser()).isNotNull();
         assertThat(responseDto.getContent().get(0).getUser().getId()).isEqualTo(user1.getId());
-        assertThat(responseDto.getContent().get(0).getSeat()).isNotNull();
-        assertThat(responseDto.getContent().get(0).getSeat().getId()).isEqualTo(ticket1.getSeat().getId());
+        assertThat(responseDto.getContent().get(0).getSeats()).isNotNull();
+        assertThat(responseDto.getContent().get(0).getSeats()).isNotEmpty();
+        assertThat(responseDto.getContent().get(0).getSeats().get(0).getId()).isEqualTo(ticket1.getSeats().get(0).getId());
         assertThat(responseDto.getContent().get(0).getScreening()).isNotNull();
         assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());    }
 
@@ -199,7 +204,7 @@ public class TicketIntegrationTest {
                 Ticket.builder()
                         .type(TicketType.ADULT)
                         .user(user)
-                        .seat(room.getSeats().get(0))
+                        .seats(new ArrayList<>(List.of(room.getSeats().get(0))))
                         .screening(screening)
                         .build()
         );
@@ -212,7 +217,7 @@ public class TicketIntegrationTest {
                 .type(TicketType.STUDENT)
                 .userId(user2.getId())
                 .screeningId(screening2.getId())
-                .seatId(room2.getSeats().get(0).getId())
+                .seatIds(new ArrayList<>(List.of(room2.getSeats().get(0).getId())))
                 .build();
 
         //when
@@ -231,8 +236,9 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getType()).isEqualTo(updateDto.getType());
         assertThat(responseDto.getUser()).isNotNull();
         assertThat(responseDto.getUser().getId()).isEqualTo(updateDto.getUserId());
-        assertThat(responseDto.getSeat()).isNotNull();
-        assertThat(responseDto.getSeat().getId()).isEqualTo(updateDto.getSeatId());
+        assertThat(responseDto.getSeats()).isNotNull();
+        assertThat(responseDto.getSeats()).isNotEmpty();
+        assertThat(responseDto.getSeats().get(0).getId()).isEqualTo(updateDto.getSeatIds().get(0));
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(updateDto.getScreeningId());
     }
@@ -248,7 +254,7 @@ public class TicketIntegrationTest {
                 Ticket.builder()
                         .type(TicketType.ADULT)
                         .user(user)
-                        .seat(room.getSeats().get(0))
+                        .seats(Collections.singletonList(room.getSeats().get(0)))
                         .screening(screening)
                         .build()
         );

@@ -31,7 +31,7 @@ public class ScreeningFreeSeatsTest {
                         .build())
                 .soldTickets(
                         Collections.singletonList(Ticket.builder()
-                                .seat(takenSeat)
+                                .seats(Collections.singletonList(takenSeat))
                                 .build())
                 )
                 .build();
@@ -48,12 +48,12 @@ public class ScreeningFreeSeatsTest {
     }
 
     @Test
-    public void canReadEmptyFreeSeats() {
+    public void canReadEmptyFreeSeatsFromSeparateTickets() {
         //given
         List<Seat> seats = getSeats();
         List<Ticket> tickets = seats.stream()
                 .map(seat -> Ticket.builder()
-                        .seat(seat)
+                        .seats(Collections.singletonList(seat))
                         .build())
                 .collect(Collectors.toList());
         Screening screening =  Screening.builder()
@@ -62,6 +62,30 @@ public class ScreeningFreeSeatsTest {
                         .seats(seats)
                         .build())
                 .soldTickets(tickets)
+                .build();
+
+        //when
+        List<Seat> freeSeats = screening.getFreeSeats();
+
+        //then
+        assertThat(freeSeats).isNotNull();
+        assertThat(freeSeats).isEmpty();
+
+    }
+
+    @Test
+    public void canReadEmptyFreeSeatsFromOneTicket() {
+        //given
+        List<Seat> seats = getSeats();
+        Ticket ticket = Ticket.builder()
+                        .seats(seats)
+                        .build();
+        Screening screening =  Screening.builder()
+                .room(Room.builder()
+                        .number("Room 1")
+                        .seats(seats)
+                        .build())
+                .soldTickets(Collections.singletonList(ticket))
                 .build();
 
         //when
