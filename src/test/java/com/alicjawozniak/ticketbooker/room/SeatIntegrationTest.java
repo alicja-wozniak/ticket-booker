@@ -1,10 +1,10 @@
 package com.alicjawozniak.ticketbooker.room;
 
-import com.alicjawozniak.ticketbooker.domain.room.Room;
-import com.alicjawozniak.ticketbooker.dto.room.CreateRoomDto;
-import com.alicjawozniak.ticketbooker.dto.room.RoomDto;
-import com.alicjawozniak.ticketbooker.dto.room.UpdateRoomDto;
-import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
+import com.alicjawozniak.ticketbooker.domain.room.Seat;
+import com.alicjawozniak.ticketbooker.dto.room.CreateSeatDto;
+import com.alicjawozniak.ticketbooker.dto.room.SeatDto;
+import com.alicjawozniak.ticketbooker.dto.room.UpdateSeatDto;
+import com.alicjawozniak.ticketbooker.repository.room.SeatRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +27,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles(profiles = "test")
-public class RoomCrudIntegrationTest {
+public class SeatIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private RoomRepository roomRepository;
+    private SeatRepository seatRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    public void canCreateRoom() throws Exception {
+    public void canCreateSeat() throws Exception {
         //given
-        CreateRoomDto createDto = CreateRoomDto.builder()
-                .number("Room 1")
+        CreateSeatDto createDto = CreateSeatDto.builder()
+                .number("Seat 1")
                 .build();
 
         //when
-        final MvcResult result = mockMvc.perform(post("/rooms")
+        final MvcResult result = mockMvc.perform(post("/seats")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto))
         )
@@ -54,8 +54,8 @@ public class RoomCrudIntegrationTest {
 
         //then
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        RoomDto responseDto =
-                objectMapper.readValue(result.getResponse().getContentAsString(), RoomDto.class);
+        SeatDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), SeatDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getNumber()).isEqualTo(createDto.getNumber());
@@ -63,42 +63,42 @@ public class RoomCrudIntegrationTest {
     }
 
     @Test
-    public void canReadRoom() throws Exception {
+    public void canReadSeat() throws Exception {
         //given
-        Room room = roomRepository.save(
-                Room.builder()
-                        .number("Room 1")
+        Seat seat = seatRepository.save(
+                Seat.builder()
+                        .number("Seat 1")
                         .build()
         );
 
         //when
-        final MvcResult result = mockMvc.perform(get("/rooms/{id}", room.getId().toString()))
+        final MvcResult result = mockMvc.perform(get("/seats/{id}", seat.getId().toString()))
                 .andReturn();
 
         //then
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-        RoomDto responseDto =
-                objectMapper.readValue(result.getResponse().getContentAsString(), RoomDto.class);
+        SeatDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), SeatDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
-        assertThat(responseDto.getNumber()).isEqualTo(room.getNumber());
+        assertThat(responseDto.getNumber()).isEqualTo(seat.getNumber());
     }
 
     @Test
-    public void canUpdateRoom() throws Exception {
+    public void canUpdateSeat() throws Exception {
         //given
-        Room room = roomRepository.save(
-                Room.builder()
-                        .number("Room 1")
+        Seat seat = seatRepository.save(
+                Seat.builder()
+                        .number("Seat 1")
                         .build()
         );
 
-        UpdateRoomDto updateDto = UpdateRoomDto.builder()
-                .number("Room 2")
+        UpdateSeatDto updateDto = UpdateSeatDto.builder()
+                .number("Seat 2")
                 .build();
 
         //when
-        final MvcResult result = mockMvc.perform(put("/rooms/{id}", room.getId().toString())
+        final MvcResult result = mockMvc.perform(put("/seats/{id}", seat.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDto))
         )
@@ -106,29 +106,29 @@ public class RoomCrudIntegrationTest {
 
         //then
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-        RoomDto responseDto =
-                objectMapper.readValue(result.getResponse().getContentAsString(), RoomDto.class);
+        SeatDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), SeatDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getNumber()).isEqualTo(updateDto.getNumber());
     }
 
     @Test
-    public void canDeleteRoom() throws Exception {
+    public void canDeleteSeat() throws Exception {
         //given
-        Room room = roomRepository.save(
-                Room.builder()
-                        .number("Room 1")
+        Seat seat = seatRepository.save(
+                Seat.builder()
+                        .number("Seat 1")
                         .build()
         );
 
         //when
-        final MvcResult result = mockMvc.perform(delete("/rooms/{id}", room.getId().toString()))
+        final MvcResult result = mockMvc.perform(delete("/seats/{id}", seat.getId().toString()))
                 .andReturn();
 
         //then
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(roomRepository.findAll()).isEmpty();
+        assertThat(seatRepository.findAll()).isEmpty();
     }
 
 }

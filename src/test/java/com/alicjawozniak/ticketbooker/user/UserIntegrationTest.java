@@ -1,9 +1,12 @@
 package com.alicjawozniak.ticketbooker.user;
 
+import com.alicjawozniak.ticketbooker.domain.room.Room;
 import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.dto.user.CreateUserDto;
 import com.alicjawozniak.ticketbooker.dto.user.UserDto;
 import com.alicjawozniak.ticketbooker.dto.user.UpdateUserDto;
+import com.alicjawozniak.ticketbooker.pageabledto.RoomPageableDto;
+import com.alicjawozniak.ticketbooker.pageabledto.UserPageableDto;
 import com.alicjawozniak.ticketbooker.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -27,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles(profiles = "test")
-public class UserCrudIntegrationTest {
+public class UserIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -86,6 +89,44 @@ public class UserCrudIntegrationTest {
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getName()).isEqualTo(user.getName());
         assertThat(responseDto.getSurname()).isEqualTo(user.getSurname());
+    }
+
+    @Test
+    public void canReadAllUsers() throws Exception {
+        //given
+        User user1 = userRepository.save(
+                User.builder()
+                        .name("Name 1")
+                        .surname("Surname 1")
+                        .build()
+        );
+        User user2 = userRepository.save(
+                User.builder()
+                        .name("Name 2")
+                        .surname("Surname 2")
+                        .build()
+        );
+
+        //when
+        final MvcResult result = mockMvc.perform(get("/users"))
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        UserPageableDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), UserPageableDto.class);
+        assertThat(responseDto.getContent()).isNotEmpty();
+        assertThat(responseDto.getContent()).hasSize(2);
+        assertThat(responseDto.getContent()).anyMatch(
+                userDto -> userDto.getId().equals(user1.getId())
+                        && userDto.getName().equals(user1.getName())
+                        && userDto.getSurname().equals(user1.getSurname())
+        );
+        assertThat(responseDto.getContent()).anyMatch(
+                userDto -> userDto.getId().equals(user2.getId())
+                        && userDto.getName().equals(user2.getName())
+                        && userDto.getSurname().equals(user2.getSurname())
+        );
     }
 
     @Test

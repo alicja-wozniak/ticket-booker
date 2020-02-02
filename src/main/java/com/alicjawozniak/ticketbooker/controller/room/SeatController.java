@@ -43,14 +43,6 @@ public class SeatController {
         );
     }
 
-    @GetMapping
-    public Page<SeatDto> readAll(
-            @PageableDefault(sort = "id") Pageable pageable
-    ) {
-        return seatService.readAll(pageable)
-                .map(SeatDtoMapper::toDto);
-    }
-
     @PutMapping("/{id}")
     public SeatDto update(@PathVariable("id") Long id, @RequestBody UpdateSeatDto dto){
         return SeatDtoMapper.toDto(

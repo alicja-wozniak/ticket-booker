@@ -46,7 +46,7 @@ public class MovieController {
 
     @GetMapping
     public Page<MovieDto> readAll(
-            @RequestParam(value = "movieId", required = false) String title,
+            @RequestParam(value = "title", required = false) String title,
             @PageableDefault(sort = "id") Pageable pageable
     ) {
         return movieService.readAll(title, pageable)

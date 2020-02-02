@@ -10,6 +10,8 @@ import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
+import com.alicjawozniak.ticketbooker.pageabledto.MoviePageableDto;
+import com.alicjawozniak.ticketbooker.pageabledto.TicketPageableDto;
 import com.alicjawozniak.ticketbooker.repository.movie.MovieRepository;
 import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
 import com.alicjawozniak.ticketbooker.repository.room.SeatRepository;
@@ -42,7 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles(profiles = "test")
-public class TicketCrudIntegrationTest {
+public class TicketIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -139,6 +141,53 @@ public class TicketCrudIntegrationTest {
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(screening.getId());
     }
+
+    @Test
+    public void canReadAllMovies() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        Screening screening = createScreening(movie, room);
+        User user1 = createUser();
+        Ticket ticket1 = ticketRepository.save(
+                Ticket.builder()
+                        .type(TicketType.ADULT)
+                        .user(user1)
+                        .seat(room.getSeats().get(0))
+                        .screening(screening)
+                        .build()
+        );
+        User user2 = createUser();
+        Ticket ticket2 = ticketRepository.save(
+                Ticket.builder()
+                        .type(TicketType.ADULT)
+                        .user(user2)
+                        .seat(room.getSeats().get(0))
+                        .screening(screening)
+                        .build()
+        );
+
+
+        //when
+        final MvcResult result = mockMvc.perform(get("/tickets")
+                .param("userId", ticket1.getUser().getId().toString())
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        TicketPageableDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), TicketPageableDto.class);
+        assertThat(responseDto.getContent()).isNotEmpty();
+        assertThat(responseDto.getContent()).hasSize(1);
+        assertThat(responseDto.getContent().get(0).getId()).isEqualTo(ticket1.getId());
+        assertThat(responseDto.getContent().get(0).getType()).isEqualTo(ticket1.getType());
+        assertThat(responseDto.getContent().get(0).getUser()).isNotNull();
+        assertThat(responseDto.getContent().get(0).getUser().getId()).isEqualTo(user1.getId());
+        assertThat(responseDto.getContent().get(0).getSeat()).isNotNull();
+        assertThat(responseDto.getContent().get(0).getSeat().getId()).isEqualTo(ticket1.getSeat().getId());
+        assertThat(responseDto.getContent().get(0).getScreening()).isNotNull();
+        assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());    }
 
     @Test
     public void canUpdateTicket() throws Exception {

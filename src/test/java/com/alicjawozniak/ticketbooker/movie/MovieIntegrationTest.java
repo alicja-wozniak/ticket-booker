@@ -4,6 +4,7 @@ import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.dto.movie.CreateMovieDto;
 import com.alicjawozniak.ticketbooker.dto.movie.MovieDto;
 import com.alicjawozniak.ticketbooker.dto.movie.UpdateMovieDto;
+import com.alicjawozniak.ticketbooker.pageabledto.MoviePageableDto;
 import com.alicjawozniak.ticketbooker.repository.movie.MovieRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -82,6 +83,36 @@ public class MovieIntegrationTest {
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
         assertThat(responseDto.getTitle()).isEqualTo(movie.getTitle());
+    }
+
+    @Test
+    public void canReadAllMovies() throws Exception {
+        //given
+        Movie movie1 = movieRepository.save(
+                Movie.builder()
+                        .title("Movie 1")
+                        .build()
+        );
+        Movie movie2 = movieRepository.save(
+                Movie.builder()
+                        .title("Movie 2")
+                        .build()
+        );
+
+        //when
+        final MvcResult result = mockMvc.perform(get("/movies")
+                .param("title", movie1.getTitle())
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+        MoviePageableDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), MoviePageableDto.class);
+        assertThat(responseDto.getContent()).isNotEmpty();
+        assertThat(responseDto.getContent()).hasSize(1);
+        assertThat(responseDto.getContent().get(0).getId()).isEqualTo(movie1.getId());
+        assertThat(responseDto.getContent().get(0).getTitle()).isEqualTo(movie1.getTitle());
     }
 
     @Test
