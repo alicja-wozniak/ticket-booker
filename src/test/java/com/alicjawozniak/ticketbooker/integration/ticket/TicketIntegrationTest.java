@@ -1,4 +1,4 @@
-package com.alicjawozniak.ticketbooker.ticket;
+package com.alicjawozniak.ticketbooker.integration.ticket;
 
 import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.domain.room.Room;
@@ -10,7 +10,6 @@ import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.TicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
-import com.alicjawozniak.ticketbooker.pageabledto.MoviePageableDto;
 import com.alicjawozniak.ticketbooker.pageabledto.TicketPageableDto;
 import com.alicjawozniak.ticketbooker.repository.movie.MovieRepository;
 import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;

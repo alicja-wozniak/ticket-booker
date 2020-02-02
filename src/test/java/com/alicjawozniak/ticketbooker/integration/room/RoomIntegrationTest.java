@@ -1,11 +1,9 @@
-package com.alicjawozniak.ticketbooker.room;
+package com.alicjawozniak.ticketbooker.integration.room;
 
-import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.domain.room.Room;
 import com.alicjawozniak.ticketbooker.dto.room.CreateRoomDto;
 import com.alicjawozniak.ticketbooker.dto.room.RoomDto;
 import com.alicjawozniak.ticketbooker.dto.room.UpdateRoomDto;
-import com.alicjawozniak.ticketbooker.pageabledto.MoviePageableDto;
 import com.alicjawozniak.ticketbooker.pageabledto.RoomPageableDto;
 import com.alicjawozniak.ticketbooker.repository.room.RoomRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

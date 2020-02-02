@@ -1,11 +1,9 @@
-package com.alicjawozniak.ticketbooker.user;
+package com.alicjawozniak.ticketbooker.integration.user;
 
-import com.alicjawozniak.ticketbooker.domain.room.Room;
 import com.alicjawozniak.ticketbooker.domain.user.User;
 import com.alicjawozniak.ticketbooker.dto.user.CreateUserDto;
 import com.alicjawozniak.ticketbooker.dto.user.UserDto;
 import com.alicjawozniak.ticketbooker.dto.user.UpdateUserDto;
-import com.alicjawozniak.ticketbooker.pageabledto.RoomPageableDto;
 import com.alicjawozniak.ticketbooker.pageabledto.UserPageableDto;
 import com.alicjawozniak.ticketbooker.repository.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

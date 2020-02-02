@@ -1,4 +1,4 @@
-package com.alicjawozniak.ticketbooker.screening;
+package com.alicjawozniak.ticketbooker.integration.screening;
 
 import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.domain.room.Room;

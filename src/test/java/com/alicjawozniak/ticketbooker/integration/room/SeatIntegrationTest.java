@@ -1,4 +1,4 @@
-package com.alicjawozniak.ticketbooker.room;
+package com.alicjawozniak.ticketbooker.integration.room;
 
 import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.dto.room.CreateSeatDto;

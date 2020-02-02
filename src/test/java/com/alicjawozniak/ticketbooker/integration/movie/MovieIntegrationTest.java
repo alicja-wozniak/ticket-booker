@@ -1,4 +1,4 @@
-package com.alicjawozniak.ticketbooker.movie;
+package com.alicjawozniak.ticketbooker.integration.movie;
 
 import com.alicjawozniak.ticketbooker.domain.movie.Movie;
 import com.alicjawozniak.ticketbooker.dto.movie.CreateMovieDto;
