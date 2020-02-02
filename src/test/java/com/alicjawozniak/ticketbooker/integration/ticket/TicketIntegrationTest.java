@@ -31,7 +31,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -73,7 +75,7 @@ public class TicketIntegrationTest {
         Room room = createRoom();
         Screening screening = createScreening(movie, room);
         CreateTicketDto createDto = CreateTicketDto.builder()
-                .type(TicketType.ADULT)
+                .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                 .userName("Adam")
                 .userSurname("Smith")
                 .screeningId(screening.getId())
@@ -93,7 +95,7 @@ public class TicketIntegrationTest {
                 objectMapper.readValue(result.getResponse().getContentAsString(), TicketDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
-        assertThat(responseDto.getType()).isEqualTo(createDto.getType());
+        assertThat(responseDto.getTypeQuantities()).isEqualTo(createDto.getTypeQuantities());
         assertThat(responseDto.getUserName()).isEqualTo(createDto.getUserName());
         assertThat(responseDto.getUserSurname()).isEqualTo(createDto.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
@@ -112,7 +114,7 @@ public class TicketIntegrationTest {
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
-                        .type(TicketType.ADULT)
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
@@ -130,7 +132,7 @@ public class TicketIntegrationTest {
                 objectMapper.readValue(result.getResponse().getContentAsString(), TicketDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
-        assertThat(responseDto.getType()).isEqualTo(ticket.getType());
+        assertThat(responseDto.getTypeQuantities()).isEqualTo(ticket.getTypeQuantities());
         assertThat(responseDto.getUserName()).isEqualTo(ticket.getUserName());
         assertThat(responseDto.getUserSurname()).isEqualTo(ticket.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
@@ -148,7 +150,7 @@ public class TicketIntegrationTest {
         Screening screening = createScreening(movie, room);
         Ticket ticket1 = ticketRepository.save(
                 Ticket.builder()
-                        .type(TicketType.ADULT)
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
@@ -157,7 +159,7 @@ public class TicketIntegrationTest {
         );
         Ticket ticket2 = ticketRepository.save(
                 Ticket.builder()
-                        .type(TicketType.ADULT)
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("John")
                         .userSurname("Nowak")
                         .seats(Collections.singletonList(room.getSeats().get(0)))
@@ -179,7 +181,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent()).isNotEmpty();
         assertThat(responseDto.getContent()).hasSize(1);
         assertThat(responseDto.getContent().get(0).getId()).isEqualTo(ticket1.getId());
-        assertThat(responseDto.getContent().get(0).getType()).isEqualTo(ticket1.getType());
+        assertThat(responseDto.getContent().get(0).getTypeQuantities()).isEqualTo(ticket1.getTypeQuantities());
         assertThat(responseDto.getContent().get(0).getUserName()).isEqualTo(ticket1.getUserName());
         assertThat(responseDto.getContent().get(0).getUserSurname()).isEqualTo(ticket1.getUserSurname());
         assertThat(responseDto.getContent().get(0).getSeats()).isNotNull();
@@ -196,7 +198,7 @@ public class TicketIntegrationTest {
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
-                        .type(TicketType.ADULT)
+                        .typeQuantities(new HashMap<>(Map.of(TicketType.ADULT, 1)))
                         .userName("Adam")
                         .userSurname("Smith")
                         .seats(new ArrayList<>(List.of(room.getSeats().get(0))))
@@ -208,7 +210,7 @@ public class TicketIntegrationTest {
         Room room2 = createRoom();
         Screening screening2 = createScreening(movie2, room2);
         UpdateTicketDto updateDto = UpdateTicketDto.builder()
-                .type(TicketType.STUDENT)
+                .typeQuantities(new HashMap<>(Map.of(TicketType.STUDENT, 1)))
                 .userName("John")
                 .userSurname("Nowak")
                 .screeningId(screening2.getId())
@@ -228,7 +230,7 @@ public class TicketIntegrationTest {
                 objectMapper.readValue(result.getResponse().getContentAsString(), TicketDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getId()).isNotNull();
-        assertThat(responseDto.getType()).isEqualTo(updateDto.getType());
+        assertThat(responseDto.getTypeQuantities()).isEqualTo(updateDto.getTypeQuantities());
         assertThat(responseDto.getUserName()).isEqualTo(updateDto.getUserName());
         assertThat(responseDto.getUserSurname()).isEqualTo(updateDto.getUserSurname());
         assertThat(responseDto.getSeats()).isNotNull();
@@ -246,7 +248,7 @@ public class TicketIntegrationTest {
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
-                        .type(TicketType.ADULT)
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
                         .seats(Collections.singletonList(room.getSeats().get(0)))

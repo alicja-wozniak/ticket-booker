@@ -62,7 +62,7 @@ public class TicketService {
 
     private Ticket toDomain(CreateTicketDto dto) {
         return Ticket.builder()
-                .type(dto.getType())
+                .typeQuantities(dto.getTypeQuantities())
                 .userName(dto.getUserName())
                 .userSurname(dto.getUserSurname())
                 .screening(screeningService.read(dto.getScreeningId()))
@@ -78,7 +78,7 @@ public class TicketService {
     private Ticket toDomain(Long id, UpdateTicketDto dto) {
         return Ticket.builder()
                 .id(id)
-                .type(dto.getType())
+                .typeQuantities(dto.getTypeQuantities())
                 .userName(dto.getUserName())
                 .userSurname(dto.getUserSurname())
                 .screening(screeningService.read(dto.getScreeningId()))

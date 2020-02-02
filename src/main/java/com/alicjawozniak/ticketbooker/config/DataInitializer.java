@@ -118,7 +118,7 @@ public class DataInitializer {
                         .screening(screening)
                         .userName("Adam")
                         .userSurname(userSurname)
-                        .type(TicketType.ADULT)
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .seats(Collections.singletonList(seat))
                         .build()
         );

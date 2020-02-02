@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +17,7 @@ public class UpdateTicketDto {
 
     private Long id;
 
-    private TicketType type;
+    private Map<TicketType,Integer> typeQuantities;
 
     private String userName;
 

@@ -13,7 +13,7 @@ public class TicketDtoMapper {
         return TicketDto
                 .builder()
                 .id(ticket.getId())
-                .type(ticket.getType())
+                .typeQuantities(ticket.getTypeQuantities())
                 .userName(ticket.getUserName())
                 .userSurname(ticket.getUserSurname())
                 .screening(ScreeningDtoMapper.toDto(ticket.getScreening()))

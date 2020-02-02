@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +19,7 @@ public class TicketDto {
 
     private Long id;
 
-    private TicketType type;
+    private Map<TicketType,Integer> typeQuantities;
 
     private String userName;
 

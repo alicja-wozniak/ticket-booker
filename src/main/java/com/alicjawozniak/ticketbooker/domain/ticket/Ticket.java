@@ -8,14 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -28,9 +28,8 @@ public class Ticket {
     @GeneratedValue
     private Long id;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private TicketType type;
+    @ElementCollection
+    private Map<TicketType,Integer> typeQuantities;
 
     @Column(nullable = false)
     private String userName;
