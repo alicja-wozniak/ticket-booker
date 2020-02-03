@@ -1,11 +1,13 @@
 package com.alicjawozniak.ticketbooker.service.ticket;
 
+import com.alicjawozniak.ticketbooker.domain.room.Room;
 import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.ticket.QTicket;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
 import com.alicjawozniak.ticketbooker.exception.ticket.SeatTakenException;
+import com.alicjawozniak.ticketbooker.exception.ticket.SingleSeatLeftException;
 import com.alicjawozniak.ticketbooker.exception.ticket.TooLateReservationException;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
 import com.alicjawozniak.ticketbooker.service.room.SeatService;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -114,6 +117,8 @@ public class TicketServiceImpl implements TicketService {
         if (!anySeatsAlreadyTaken.isEmpty()) {
             throw new SeatTakenException(anySeatsAlreadyTaken);
         }
+
+        validateIfAnySingleSeatLeft(ticket);
     }
 
     private boolean isAfterReservationDeadline(Ticket ticket) {
@@ -124,8 +129,35 @@ public class TicketServiceImpl implements TicketService {
     private List<Long> getAnySeatsAlreadyTaken(Ticket ticket) {
         return ticket.getSeats()
                 .stream()
-                .filter(ticketRepository::existsBySeatsContaining)
+                .filter(this::isSeatTaken)
                 .map(Seat::getId)
                 .collect(Collectors.toList());
+    }
+
+    private void validateIfAnySingleSeatLeft(Ticket ticket) {
+        Room room = ticket.getScreening().getRoom();
+        ticket.getSeats()
+                .forEach(
+                        seat -> {
+                            Long seatNumber = seat.getNumber();
+                            validateSingleLeftSeats(room, seatNumber - 1, seatNumber - 2);
+                            validateSingleLeftSeats(room, seatNumber - 1, seatNumber - 2);
+                        }
+                );
+    }
+
+    private void validateSingleLeftSeats(Room room, long firstNearestSeatNumber, long secondNearestSeatNumber) {
+        Optional<Seat> firstNearestSeat = seatService.read(room, firstNearestSeatNumber);
+        Optional<Seat> secondNearestSeat = seatService.read(room, secondNearestSeatNumber);
+        if (firstNearestSeat.isPresent() && secondNearestSeat.isPresent()
+                && !isSeatTaken(firstNearestSeat.get()) && isSeatTaken(secondNearestSeat.get())) {
+            throw new SingleSeatLeftException();
+        }
+    }
+
+
+
+    private boolean isSeatTaken(Seat seat) {
+        return ticketRepository.existsBySeatsContaining(seat);
     }
 }

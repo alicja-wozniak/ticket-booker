@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 @Service
@@ -50,6 +51,7 @@ public class DataInitializer {
         List<Room> rooms = Stream.of("Room 1", "Room 2", "Room 3", "Room 4", "Room 5")
                 .map(this::createRoom)
                 .collect(Collectors.toList());
+        rooms.forEach(this::createSeats);
         List<String> userSurnames = Arrays.asList("Kowalski", "Nowak", "Smith");
 
         List<Screening> screenings = IntStream.rangeClosed(1, 20)
@@ -96,16 +98,16 @@ public class DataInitializer {
         return roomRepository.save(
                 Room.builder()
                         .number(number)
-                        .seats(createSeats())
                         .build()
         );
     }
 
-    private List<Seat> createSeats(){
+    private List<Seat> createSeats(Room room){
         return seatRepository.saveAll(
-                IntStream.rangeClosed(1, 10)
+                LongStream.rangeClosed(1, 10)
                         .mapToObj(number -> Seat.builder()
-                                .number("Seat " + number)
+                                .number(number)
+                                .room(room)
                                 .build()
                         )
                         .collect(Collectors.toList())

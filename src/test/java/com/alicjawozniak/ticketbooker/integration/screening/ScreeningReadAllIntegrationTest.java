@@ -193,13 +193,13 @@ public class ScreeningReadAllIntegrationTest {
         return seatRepository.saveAll(
                 Arrays.asList(
                         Seat.builder()
-                                .number("Seat 1")
+                                .number(1L)
                                 .build(),
                         Seat.builder()
-                                .number("Seat 2")
+                                .number(2L)
                                 .build(),
                         Seat.builder()
-                                .number("Seat 3")
+                                .number(3L)
                                 .build()
                 )
         );

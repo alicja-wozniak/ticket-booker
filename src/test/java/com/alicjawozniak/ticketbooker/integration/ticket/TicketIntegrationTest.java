@@ -76,13 +76,14 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = createScreening(movie, room);
         CreateTicketDto createDto = CreateTicketDto.builder()
                 .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                 .userName("Adam")
                 .userSurname("Smith")
                 .screeningId(screening.getId())
-                .seatIds(Collections.singletonList(room.getSeats().get(0).getId()))
+                .seatIds(Collections.singletonList(seats.get(0).getId()))
                 .build();
 
         //when
@@ -117,6 +118,7 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = screeningRepository.save(
                 Screening.builder()
                         .movie(movie)
@@ -131,7 +133,7 @@ public class TicketIntegrationTest {
                 .userName("Adam")
                 .userSurname("Smith")
                 .screeningId(screening.getId())
-                .seatIds(Collections.singletonList(room.getSeats().get(0).getId()))
+                .seatIds(Collections.singletonList(seats.get(0).getId()))
                 .build();
 
         //when
@@ -158,6 +160,7 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = screeningRepository.save(
                 Screening.builder()
                         .movie(movie)
@@ -166,7 +169,7 @@ public class TicketIntegrationTest {
                         .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
                         .build()
         );
-        Seat seat = room.getSeats().get(0);
+        Seat seat = seats.get(0);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
@@ -204,18 +207,72 @@ public class TicketIntegrationTest {
 
     }
 
+
+    @Test
+    public void cannotCreateTicketWhenSingleSeatIsLeft() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        List<Seat> seats = createSeats(room);
+        Screening screening = screeningRepository.save(
+                Screening.builder()
+                        .movie(movie)
+                        .room(room)
+                        .startTime(LocalDateTime.now().plusDays(1).plusMinutes(5))
+                        .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
+                        .build()
+        );
+        int takenSeatIndex = 0;
+        int creatingSeatIndex = 2;
+        Ticket ticket = ticketRepository.save(
+                Ticket.builder()
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
+                        .userName("Adam")
+                        .userSurname("Smith")
+                        .seats(Collections.singletonList(seats.get(takenSeatIndex)))
+                        .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
+                        .build()
+        );
+        CreateTicketDto createDto = CreateTicketDto.builder()
+                .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
+                .userName("Adam")
+                .userSurname("Smith")
+                .screeningId(screening.getId())
+                .seatIds(Collections.singletonList(seats.get(creatingSeatIndex).getId()))
+                .build();
+
+        //when
+        final MvcResult result = mockMvc.perform(post("/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto))
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getMessage()).isEqualTo("Single seat left");
+        assertThat(responseDto.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseDto.getTimestamp()).isNotNull();
+
+    }
+
     @Test
     public void canReadTicket() throws Exception {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
-                        .seats(Collections.singletonList(room.getSeats().get(0)))
+                        .seats(Collections.singletonList(seats.get(0)))
                         .screening(screening)
                         .paymentDeadline(LocalDateTime.now())
                         .build()
@@ -248,13 +305,14 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = createScreening(movie, room);
         Ticket ticket1 = ticketRepository.save(
                 Ticket.builder()
                         .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
-                        .seats(Collections.singletonList(room.getSeats().get(0)))
+                        .seats(Collections.singletonList(seats.get(0)))
                         .screening(screening)
                         .paymentDeadline(LocalDateTime.now())
                         .build()
@@ -264,7 +322,7 @@ public class TicketIntegrationTest {
                         .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("John")
                         .userSurname("Nowak")
-                        .seats(Collections.singletonList(room.getSeats().get(0)))
+                        .seats(Collections.singletonList(seats.get(0)))
                         .screening(screening)
                         .paymentDeadline(LocalDateTime.now())
                         .build()
@@ -301,13 +359,14 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .typeQuantities(new HashMap<>(Map.of(TicketType.ADULT, 1)))
                         .userName("Adam")
                         .userSurname("Smith")
-                        .seats(new ArrayList<>(List.of(room.getSeats().get(0))))
+                        .seats(new ArrayList<>(List.of(seats.get(0))))
                         .screening(screening)
                         .paymentDeadline(LocalDateTime.now())
                         .build()
@@ -315,13 +374,14 @@ public class TicketIntegrationTest {
 
         Movie movie2 = createMovie();
         Room room2 = createRoom();
+        List<Seat> seats2 = createSeats(room2);
         Screening screening2 = createScreening(movie2, room2);
         UpdateTicketDto updateDto = UpdateTicketDto.builder()
                 .typeQuantities(new HashMap<>(Map.of(TicketType.STUDENT, 1)))
                 .userName("John")
                 .userSurname("Nowak")
                 .screeningId(screening2.getId())
-                .seatIds(new ArrayList<>(List.of(room2.getSeats().get(0).getId())))
+                .seatIds(new ArrayList<>(List.of(seats2.get(0).getId())))
                 .build();
 
         //when
@@ -354,13 +414,14 @@ public class TicketIntegrationTest {
         //given
         Movie movie = createMovie();
         Room room = createRoom();
+        List<Seat> seats = createSeats(room);
         Screening screening = createScreening(movie, room);
         Ticket ticket = ticketRepository.save(
                 Ticket.builder()
                         .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
                         .userName("Adam")
                         .userSurname("Smith")
-                        .seats(Collections.singletonList(room.getSeats().get(0)))
+                        .seats(Collections.singletonList(seats.get(0)))
                         .screening(screening)
                         .paymentDeadline(LocalDateTime.now())
                         .build()
@@ -379,22 +440,32 @@ public class TicketIntegrationTest {
         return roomRepository.save(
                 Room.builder()
                         .number("Room 1")
-                        .seats(createSeats())
                         .build()
         );
     }
 
-    private List<Seat> createSeats(){
+    private List<Seat> createSeats(Room room){
         return seatRepository.saveAll(
                 Arrays.asList(
                         Seat.builder()
-                                .number("Seat 1")
+                                .number(1L)
+                                .room(room)
                                 .build(),
                         Seat.builder()
-                                .number("Seat 2")
+                                .number(2L)
+                                .room(room)
                                 .build(),
                         Seat.builder()
-                                .number("Seat 3")
+                                .number(3L)
+                                .room(room)
+                                .build(),
+                        Seat.builder()
+                                .number(4L)
+                                .room(room)
+                                .build(),
+                        Seat.builder()
+                                .number(5L)
+                                .room(room)
                                 .build()
                 )
         );

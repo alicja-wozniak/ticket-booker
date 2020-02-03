@@ -13,6 +13,6 @@ public class SeatDto {
 
     private Long id;
 
-    private String number;
+    private Long number;
 
 }

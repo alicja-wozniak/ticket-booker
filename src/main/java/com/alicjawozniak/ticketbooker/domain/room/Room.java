@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,10 @@ public class Room {
     @Column(nullable = false)
     private String number;
 
-    @OneToMany
+    @OneToMany(mappedBy = "room")
     private List<Seat> seats;
 
+    public List<Seat> getSeats() {
+        return seats == null ? new ArrayList<>() : seats;
+    }
 }

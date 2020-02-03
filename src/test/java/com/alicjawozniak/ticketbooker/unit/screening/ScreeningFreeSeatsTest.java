@@ -126,15 +126,15 @@ public class ScreeningFreeSeatsTest {
                 Arrays.asList(
                         Seat.builder()
                                 .id(1L)
-                                .number("Seat 1")
+                                .number(1L)
                                 .build(),
                         Seat.builder()
                                 .id(2L)
-                                .number("Seat 2")
+                                .number(2L)
                                 .build(),
                         Seat.builder()
                                 .id(3L)
-                                .number("Seat 3")
+                                .number(3L)
                                 .build()
                 )
         );

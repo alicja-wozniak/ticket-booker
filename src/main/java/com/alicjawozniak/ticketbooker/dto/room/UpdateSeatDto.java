@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateSeatDto {
 
-    private String number;
+    private Long number;
 
 }

@@ -42,7 +42,7 @@ public class SeatIntegrationTest {
     public void canCreateSeat() throws Exception {
         //given
         CreateSeatDto createDto = CreateSeatDto.builder()
-                .number("Seat 1")
+                .number(1L)
                 .build();
 
         //when
@@ -67,7 +67,7 @@ public class SeatIntegrationTest {
         //given
         Seat seat = seatRepository.save(
                 Seat.builder()
-                        .number("Seat 1")
+                        .number(1L)
                         .build()
         );
 
@@ -89,12 +89,12 @@ public class SeatIntegrationTest {
         //given
         Seat seat = seatRepository.save(
                 Seat.builder()
-                        .number("Seat 1")
+                        .number(1L)
                         .build()
         );
 
         UpdateSeatDto updateDto = UpdateSeatDto.builder()
-                .number("Seat 2")
+                .number(2L)
                 .build();
 
         //when
@@ -118,7 +118,7 @@ public class SeatIntegrationTest {
         //given
         Seat seat = seatRepository.save(
                 Seat.builder()
-                        .number("Seat 1")
+                        .number(1L)
                         .build()
         );
 

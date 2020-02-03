@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Data
@@ -24,6 +25,8 @@ public class Seat {
     private Long id;
 
     @Column(nullable = false)
-    private String number;
+    private Long number;
 
+    @ManyToOne
+    private Room room;
 }

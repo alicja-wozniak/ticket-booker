@@ -2,6 +2,7 @@ package com.alicjawozniak.ticketbooker.controller;
 
 import com.alicjawozniak.ticketbooker.dto.ErrorDto;
 import com.alicjawozniak.ticketbooker.exception.ticket.SeatTakenException;
+import com.alicjawozniak.ticketbooker.exception.ticket.SingleSeatLeftException;
 import com.alicjawozniak.ticketbooker.exception.ticket.TooLateReservationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ErrorDto.builder()
                         .message("Too late reservation")
+                        .status(status)
+                        .timestamp(LocalDateTime.now())
+                        .params(null)
+                        .build(),
+                status);
+    }
+
+    @ExceptionHandler(SingleSeatLeftException.class)
+    public ResponseEntity<ErrorDto> handleSingleSeatLeftException(final SingleSeatLeftException e, final WebRequest request) {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(
+                ErrorDto.builder()
+                        .message("Single seat left")
                         .status(status)
                         .timestamp(LocalDateTime.now())
                         .params(null)
