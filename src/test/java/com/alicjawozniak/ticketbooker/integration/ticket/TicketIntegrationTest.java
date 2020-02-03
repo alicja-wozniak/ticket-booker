@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +149,58 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getMessage()).isEqualTo("Too late reservation");
         assertThat(responseDto.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseDto.getTimestamp()).isNotNull();
+        assertThat(responseDto.getParams()).isNull();
+
+    }
+
+    @Test
+    public void cannotCreateTicketWhenSeatIsAlreadyTaken() throws Exception {
+        //given
+        Movie movie = createMovie();
+        Room room = createRoom();
+        Screening screening = screeningRepository.save(
+                Screening.builder()
+                        .movie(movie)
+                        .room(room)
+                        .startTime(LocalDateTime.now().plusDays(1).plusMinutes(5))
+                        .endTime(LocalDateTime.now().plusDays(1).plusHours(2))
+                        .build()
+        );
+        Seat seat = room.getSeats().get(0);
+        Ticket ticket = ticketRepository.save(
+                Ticket.builder()
+                        .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
+                        .userName("Adam")
+                        .userSurname("Smith")
+                        .seats(Collections.singletonList(seat))
+                        .screening(screening)
+                        .paymentDeadline(LocalDateTime.now())
+                        .build()
+        );
+        CreateTicketDto createDto = CreateTicketDto.builder()
+                .typeQuantities(Collections.singletonMap(TicketType.ADULT, 1))
+                .userName("Adam")
+                .userSurname("Smith")
+                .screeningId(screening.getId())
+                .seatIds(Collections.singletonList(seat.getId()))
+                .build();
+
+        //when
+        final MvcResult result = mockMvc.perform(post("/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createDto))
+        )
+                .andReturn();
+
+        //then
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorDto responseDto =
+                objectMapper.readValue(result.getResponse().getContentAsString(), ErrorDto.class);
+        assertThat(responseDto).isNotNull();
+        assertThat(responseDto.getMessage()).isEqualTo("Seat already taken");
+        assertThat(responseDto.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseDto.getTimestamp()).isNotNull();
+        assertThat(responseDto.getParams()).isEqualTo(Collections.singletonList(seat.getId().toString()));
 
     }
 

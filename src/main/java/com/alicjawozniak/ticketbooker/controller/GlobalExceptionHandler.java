@@ -1,6 +1,7 @@
 package com.alicjawozniak.ticketbooker.controller;
 
 import com.alicjawozniak.ticketbooker.dto.ErrorDto;
+import com.alicjawozniak.ticketbooker.exception.ticket.SeatTakenException;
 import com.alicjawozniak.ticketbooker.exception.ticket.TooLateReservationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -36,8 +39,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .message("Too late reservation")
                         .status(status)
                         .timestamp(LocalDateTime.now())
+                        .params(null)
                         .build(),
                 status);
+    }
+
+    @ExceptionHandler(SeatTakenException.class)
+    public ResponseEntity<ErrorDto> handleSeatTakenException(final SeatTakenException e, final WebRequest request) {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(
+                ErrorDto.builder()
+                        .message("Seat already taken")
+                        .status(status)
+                        .timestamp(LocalDateTime.now())
+                        .params(toParams(e.getTakenSeatIds()))
+                        .build(),
+                status);
+    }
+
+    private List<String> toParams(List<Long> longs) {
+        return longs.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
     }
 
 }

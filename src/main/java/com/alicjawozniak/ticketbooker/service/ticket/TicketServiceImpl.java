@@ -1,9 +1,11 @@
 package com.alicjawozniak.ticketbooker.service.ticket;
 
+import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.domain.ticket.QTicket;
 import com.alicjawozniak.ticketbooker.domain.ticket.Ticket;
 import com.alicjawozniak.ticketbooker.dto.ticket.CreateTicketDto;
 import com.alicjawozniak.ticketbooker.dto.ticket.UpdateTicketDto;
+import com.alicjawozniak.ticketbooker.exception.ticket.SeatTakenException;
 import com.alicjawozniak.ticketbooker.exception.ticket.TooLateReservationException;
 import com.alicjawozniak.ticketbooker.repository.ticket.TicketRepository;
 import com.alicjawozniak.ticketbooker.service.room.SeatService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class TicketServiceImpl implements TicketService {
 
     private static final int HOURS_TO_COMPLETE_PAYMENT = 2;
+    private static final int MINUTES_TO_CREATE_TICKET_BEFORE_SCREENING = 15;
 
     private final ScreeningService screeningService;
 
@@ -102,10 +106,26 @@ public class TicketServiceImpl implements TicketService {
     }
 
     private void validate(Ticket ticket) {
-        if (LocalDateTime.now().isAfter(
-                ticket.getScreening().getStartTime().minusMinutes(15L))
-        ) {
+        if (isAfterReservationDeadline(ticket)) {
             throw new TooLateReservationException();
         }
+
+        List<Long> anySeatsAlreadyTaken = getAnySeatsAlreadyTaken(ticket);
+        if (!anySeatsAlreadyTaken.isEmpty()) {
+            throw new SeatTakenException(anySeatsAlreadyTaken);
+        }
+    }
+
+    private boolean isAfterReservationDeadline(Ticket ticket) {
+        return LocalDateTime.now().isAfter(
+                ticket.getScreening().getStartTime().minusMinutes(MINUTES_TO_CREATE_TICKET_BEFORE_SCREENING));
+    }
+
+    private List<Long> getAnySeatsAlreadyTaken(Ticket ticket) {
+        return ticket.getSeats()
+                .stream()
+                .filter(ticketRepository::existsBySeatsContaining)
+                .map(Seat::getId)
+                .collect(Collectors.toList());
     }
 }

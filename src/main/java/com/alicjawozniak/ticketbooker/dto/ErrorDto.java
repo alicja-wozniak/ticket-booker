@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +20,7 @@ public class ErrorDto {
     private LocalDateTime timestamp;
 
     private String message;
+
+    private List<String> params;
 
 }
