@@ -1,15 +1,13 @@
 package com.alicjawozniak.ticketbooker.controller.room;
 
+import com.alicjawozniak.ticketbooker.controller.DtoMapperConfig;
 import com.alicjawozniak.ticketbooker.domain.room.Room;
 import com.alicjawozniak.ticketbooker.dto.room.RoomDto;
+import org.mapstruct.Mapper;
 
-public class RoomDtoMapper {
+@Mapper(config = DtoMapperConfig.class)
+public interface RoomDtoMapper {
 
-    public static RoomDto toDto(Room room) {
-        return RoomDto.builder()
-                .id(room.getId())
-                .number(room.getNumber())
-                .build();
-    }
+    RoomDto toDto(Room room);
 
 }

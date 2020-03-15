@@ -1,15 +1,13 @@
 package com.alicjawozniak.ticketbooker.controller.room;
 
+import com.alicjawozniak.ticketbooker.controller.DtoMapperConfig;
 import com.alicjawozniak.ticketbooker.domain.room.Seat;
 import com.alicjawozniak.ticketbooker.dto.room.SeatDto;
+import org.mapstruct.Mapper;
 
-public class SeatDtoMapper {
+@Mapper(config = DtoMapperConfig.class)
+public interface SeatDtoMapper {
 
-    public static SeatDto toDto(Seat seat) {
-        return SeatDto.builder()
-                .id(seat.getId())
-                .number(seat.getNumber())
-                .build();
-    }
+    SeatDto toDto(Seat seat);
 
 }

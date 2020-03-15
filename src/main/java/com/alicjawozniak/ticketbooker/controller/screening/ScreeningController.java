@@ -30,19 +30,21 @@ import java.time.LocalDateTime;
 @RequestMapping("/screenings")
 public class ScreeningController {
 
+    private final ScreeningDtoMapper screeningDtoMapper;
+    private final CustomScreeningDtoMapper customScreeningDtoMapper;
     private final ScreeningService screeningService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ScreeningDto create(@RequestBody @Valid CreateScreeningDto dto){
-        return ScreeningDtoMapper.toDto(
+        return screeningDtoMapper.toDto(
                 screeningService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
     public ScreeningDto read(@PathVariable("id") Long id){
-        return ScreeningDtoMapper.toDto(
+        return screeningDtoMapper.toDto(
                 screeningService.read(id)
         );
     }
@@ -54,7 +56,7 @@ public class ScreeningController {
             @RequestParam(value = "movieId", required = false) Long movieId,
             @PageableDefault(sort = "id") Pageable pageable
     ) {
-        return ScreeningDtoMapper.toDto(
+        return customScreeningDtoMapper.toDto(
                 screeningService.readAll(minStartTime, maxStartTime, movieId, pageable)
         );
     }
@@ -65,14 +67,14 @@ public class ScreeningController {
             @RequestParam(value = "maxStartTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime maxStartTime,
             @RequestParam(value = "movieId", required = false) Long movieId
     ) {
-        return ScreeningDtoMapper.toGroupedScreeningDto(
+        return customScreeningDtoMapper.toGroupedScreeningDto(
                 screeningService.readAll(minStartTime, maxStartTime, movieId, Pageable.unpaged())
         );
     }
 
     @PutMapping("/{id}")
     public ScreeningDto update(@PathVariable("id") Long id, @RequestBody UpdateScreeningDto dto){
-        return ScreeningDtoMapper.toDto(
+        return screeningDtoMapper.toDto(
                 screeningService.update(id, dto)
         );
     }

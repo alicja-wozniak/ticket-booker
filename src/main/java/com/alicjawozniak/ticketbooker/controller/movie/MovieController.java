@@ -27,19 +27,20 @@ import javax.validation.Valid;
 @RequestMapping("/movies")
 public class MovieController {
 
+    private final MovieDtoMapper movieDtoMapper;
     private final MovieService movieService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovieDto create(@RequestBody @Valid CreateMovieDto dto){
-        return MovieDtoMapper.toDto(
+        return movieDtoMapper.toDto(
                 movieService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
     public MovieDto read(@PathVariable("id") Long id){
-        return MovieDtoMapper.toDto(
+        return movieDtoMapper.toDto(
                 movieService.read(id)
         );
     }
@@ -50,12 +51,12 @@ public class MovieController {
             @PageableDefault(sort = "id") Pageable pageable
     ) {
         return movieService.readAll(title, pageable)
-                .map(MovieDtoMapper::toDto);
+                .map(movieDtoMapper::toDto);
     }
 
     @PutMapping("/{id}")
     public MovieDto update(@PathVariable("id") Long id, @RequestBody UpdateMovieDto dto){
-        return MovieDtoMapper.toDto(
+        return movieDtoMapper.toDto(
                 movieService.update(id, dto)
         );
     }

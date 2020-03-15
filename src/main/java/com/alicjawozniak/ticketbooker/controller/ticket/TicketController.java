@@ -27,19 +27,20 @@ import javax.validation.Valid;
 @RequestMapping("/tickets")
 public class TicketController {
 
+    private final TicketDtoMapper ticketDtoMapper;
     private final TicketService ticketService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TicketDto create(@RequestBody @Valid CreateTicketDto dto){
-        return TicketDtoMapper.toDto(
+        return ticketDtoMapper.toDto(
                 ticketService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
     public TicketDto read(@PathVariable("id") Long id){
-        return TicketDtoMapper.toDto(
+        return ticketDtoMapper.toDto(
                 ticketService.read(id)
         );
     }
@@ -50,12 +51,12 @@ public class TicketController {
             @PageableDefault(sort = "id") Pageable pageable
     ) {
         return ticketService.readAll(userSurname, pageable)
-                .map(TicketDtoMapper::toDto);
+                .map(ticketDtoMapper::toDto);
     }
 
     @PutMapping("/{id}")
     public TicketDto update(@PathVariable("id") Long id, @RequestBody UpdateTicketDto dto){
-        return TicketDtoMapper.toDto(
+        return ticketDtoMapper.toDto(
                 ticketService.update(id, dto)
         );
     }
