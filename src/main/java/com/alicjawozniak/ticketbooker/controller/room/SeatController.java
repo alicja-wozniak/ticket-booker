@@ -23,26 +23,27 @@ import javax.validation.Valid;
 @RequestMapping("/seats")
 public class SeatController {
 
+    private final SeatDtoMapper seatDtoMapper;
     private final SeatService seatService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SeatDto create(@RequestBody @Valid CreateSeatDto dto){
-        return SeatDtoMapper.toDto(
+        return seatDtoMapper.toDto(
                 seatService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
     public SeatDto read(@PathVariable("id") Long id){
-        return SeatDtoMapper.toDto(
+        return seatDtoMapper.toDto(
                 seatService.read(id)
         );
     }
 
     @PutMapping("/{id}")
     public SeatDto update(@PathVariable("id") Long id, @RequestBody UpdateSeatDto dto){
-        return SeatDtoMapper.toDto(
+        return seatDtoMapper.toDto(
                 seatService.update(id, dto)
         );
     }

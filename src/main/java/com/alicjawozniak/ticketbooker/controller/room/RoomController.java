@@ -26,19 +26,20 @@ import javax.validation.Valid;
 @RequestMapping("/rooms")
 public class RoomController {
 
+    private final RoomDtoMapper roomDtoMapper;
     private final RoomService roomService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoomDto create(@RequestBody @Valid CreateRoomDto dto){
-        return RoomDtoMapper.toDto(
+        return roomDtoMapper.toDto(
                 roomService.create(dto)
         );
     }
 
     @GetMapping("/{id}")
     public RoomDto read(@PathVariable("id") Long id){
-        return RoomDtoMapper.toDto(
+        return roomDtoMapper.toDto(
                 roomService.read(id)
         );
     }
@@ -48,12 +49,12 @@ public class RoomController {
             @PageableDefault(sort = "id") Pageable pageable
     ) {
         return roomService.readAll(pageable)
-                .map(RoomDtoMapper::toDto);
+                .map(roomDtoMapper::toDto);
     }
 
     @PutMapping("/{id}")
     public RoomDto update(@PathVariable("id") Long id, @RequestBody UpdateRoomDto dto){
-        return RoomDtoMapper.toDto(
+        return roomDtoMapper.toDto(
                 roomService.update(id, dto)
         );
     }
