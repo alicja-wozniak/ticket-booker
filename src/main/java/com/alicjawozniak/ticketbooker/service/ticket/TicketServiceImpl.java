@@ -14,13 +14,13 @@ import com.alicjawozniak.ticketbooker.service.room.SeatService;
 import com.alicjawozniak.ticketbooker.service.screening.ScreeningService;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,8 +29,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
 
-    private static final int HOURS_TO_COMPLETE_PAYMENT = 2;
-    private static final int MINUTES_TO_CREATE_TICKET_BEFORE_SCREENING = 15;
+    @Value("${tickets.hours-to-complete-payment}")
+    private int hoursToCompletePayment;
+
+    @Value("${tickets.minutes-to-create-ticket-before-screening}")
+    private int minutesToCreateTicketBeforeScreening;
 
     private final ScreeningService screeningService;
 
@@ -89,7 +92,7 @@ public class TicketServiceImpl implements TicketService {
                         .map(seatService::read)
                         .collect(Collectors.toList())
                 )
-                .paymentDeadline(LocalDateTime.now().plusHours(HOURS_TO_COMPLETE_PAYMENT))
+                .paymentDeadline(LocalDateTime.now().plusHours(hoursToCompletePayment))
                 .build();
     }
 
@@ -123,7 +126,7 @@ public class TicketServiceImpl implements TicketService {
 
     private boolean isAfterReservationDeadline(Ticket ticket) {
         return LocalDateTime.now().isAfter(
-                ticket.getScreening().getStartTime().minusMinutes(MINUTES_TO_CREATE_TICKET_BEFORE_SCREENING));
+                ticket.getScreening().getStartTime().minusMinutes(minutesToCreateTicketBeforeScreening));
     }
 
     private List<Long> getAnySeatsAlreadyTaken(Ticket ticket) {
