@@ -1,17 +1,17 @@
 package com.alicjawozniak.ticketbooker.domain.ticket;
 
 public enum TicketType {
-    ADULT(25),
-    STUDENT(18),
-    CHILD(12.5);
+    ADULT(2500),
+    STUDENT(1800),
+    CHILD(1250);
 
-    private final double price;
+    private final long price;
 
-    TicketType(double price) {
+    TicketType(long price) {
         this.price = price;
     }
 
-    public double getPrice() {
+    public long getPrice() {
         return price;
     }
 }

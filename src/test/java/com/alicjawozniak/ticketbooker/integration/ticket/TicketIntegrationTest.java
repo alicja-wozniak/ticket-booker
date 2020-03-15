@@ -109,7 +109,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getScreening().getId()).isEqualTo(createDto.getScreeningId());
         assertThat(responseDto.getPaymentDeadline().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(responseDto.getPaymentDeadline().getHour()).isEqualTo(LocalDateTime.now().plusHours(2).getHour());
-        assertThat(responseDto.getPrice()).isEqualTo(25);
+        assertThat(responseDto.getPrice()).isEqualTo(2500);
 
     }
 
@@ -297,7 +297,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(screening.getId());
         assertThat(responseDto.getPaymentDeadline()).isEqualTo(ticket.getPaymentDeadline());
-        assertThat(responseDto.getPrice()).isEqualTo(25);
+        assertThat(responseDto.getPrice()).isEqualTo(2500);
     }
 
     @Test
@@ -351,7 +351,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getContent().get(0).getScreening()).isNotNull();
         assertThat(responseDto.getContent().get(0).getScreening().getId()).isEqualTo(screening.getId());
         assertThat(responseDto.getContent().get(0).getPaymentDeadline()).isEqualTo(ticket1.getPaymentDeadline());
-        assertThat(responseDto.getContent().get(0).getPrice()).isEqualTo(25);
+        assertThat(responseDto.getContent().get(0).getPrice()).isEqualTo(2500);
     }
 
     @Test
@@ -406,7 +406,7 @@ public class TicketIntegrationTest {
         assertThat(responseDto.getScreening()).isNotNull();
         assertThat(responseDto.getScreening().getId()).isEqualTo(updateDto.getScreeningId());
         assertThat(responseDto.getPaymentDeadline()).isEqualTo(ticket.getPaymentDeadline());
-        assertThat(responseDto.getPrice()).isEqualTo(18);
+        assertThat(responseDto.getPrice()).isEqualTo(1800);
     }
 
     @Test

@@ -46,10 +46,10 @@ public class Ticket {
 
     private LocalDateTime paymentDeadline;
 
-    public Double getPrice() {
+    public Long getPrice() {
         return typeQuantities.entrySet()
                 .stream()
-                .mapToDouble(
+                .mapToLong(
                         entry -> entry.getKey().getPrice() * entry.getValue()
                 )
                 .sum();

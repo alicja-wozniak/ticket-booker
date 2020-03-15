@@ -32,5 +32,5 @@ public class TicketDto {
 
     private LocalDateTime paymentDeadline;
 
-    private Double price;
+    private Long price;
 }

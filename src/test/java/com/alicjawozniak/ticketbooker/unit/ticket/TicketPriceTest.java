@@ -25,11 +25,11 @@ public class TicketPriceTest {
                 .build();
 
         //when
-        Double price = ticket.getPrice();
+        Long price = ticket.getPrice();
 
         //then
         assertThat(price).isNotNull();
-        assertThat(price).isEqualTo(25);
+        assertThat(price).isEqualTo(2500);
     }
 
     @Test
@@ -44,11 +44,11 @@ public class TicketPriceTest {
                 .build();
 
         //when
-        Double price = ticket.getPrice();
+        Long price = ticket.getPrice();
 
         //then
         assertThat(price).isNotNull();
-        assertThat(price).isEqualTo(18);
+        assertThat(price).isEqualTo(1800);
     }
 
     @Test
@@ -63,11 +63,11 @@ public class TicketPriceTest {
                 .build();
 
         //when
-        Double price = ticket.getPrice();
+        Long price = ticket.getPrice();
 
         //then
         assertThat(price).isNotNull();
-        assertThat(price).isEqualTo(12.5);
+        assertThat(price).isEqualTo(1250);
     }
 
     @Test
@@ -84,12 +84,12 @@ public class TicketPriceTest {
                 .build();
 
         //when
-        Double price = ticket.getPrice();
+        Long price = ticket.getPrice();
 
         //then
         assertThat(price).isNotNull();
         assertThat(price).isEqualTo(
-                (2 * 25) + (2 * 18) + (3 * 12.5)
+                (2 * 2500) + (2 * 1800) + (3 * 1250)
         );
     }
 }
